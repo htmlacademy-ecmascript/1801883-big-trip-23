@@ -3,6 +3,7 @@ import EventItemView from '../view/event-item-view.js';
 import NewFormView from '../view/form/new-form-view.js';
 import HeaderFormView from '../view/form/header-form-view.js';
 import OffersFormView from '../view/form/offers-form-view.js';
+import OfferItemFormView from '../view/form/offer-item-form-view.js';
 import DestinationFormView from '../view/form/destination-form-view.js';
 import { RenderPosition, render } from '../render.js';
 
@@ -26,6 +27,7 @@ export default class EventsPresenter {
 
     render(new HeaderFormView(), this.newForm.getElement().firstElementChild, RenderPosition.AFTERBEGIN);
     render(this.offersForm, this.eventDetailsContainer);
+    render(new OfferItemFormView, this.offersForm.getElement().children[1]);
     render(new DestinationFormView, this.eventDetailsContainer);
 
     for (let index = 0; index < EVENTS_NUMBER; index++) {
