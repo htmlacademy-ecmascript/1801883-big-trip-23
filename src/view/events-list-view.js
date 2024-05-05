@@ -1,11 +1,11 @@
 import { createElement } from '../render.js';
 
 
-const createWorkspaceTemplate = () => '<ul class="trip-events__list"></ul>';
+const createEventsListTemplate = () => '<ul class="trip-events__list"></ul>';
 
-export default class WorkspaceView {
+export default class EventsListView {
   getTemplate() {
-    return createWorkspaceTemplate();
+    return createEventsListTemplate();
   }
 
   getElement() {
