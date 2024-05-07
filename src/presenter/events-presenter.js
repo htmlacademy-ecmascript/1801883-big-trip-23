@@ -9,29 +9,27 @@ import { RenderPosition, render } from '../render.js';
 
 const EVENTS_NUMBER = 3;
 
-
 export default class EventsPresenter {
 
-  constructor (mainContainerElement) {
-    this.mainContainerElement = mainContainerElement;
+  eventsList = new EventsListView();
+  // newForm = new NewFormView();
+  // eventDetailsContainer = this.newForm.getElement().firstElementChild.firstElementChild;
+  // offersForm = new OffersFormView();
+
+  constructor ({eventsContainer}) {
+    this.eventsContainerElement = eventsContainer;
   }
 
-  eventsContainer = new EventsListView();
-  newForm = new NewFormView();
-  eventDetailsContainer = this.newForm.getElement().firstElementChild.firstElementChild;
-  offersForm = new OffersFormView();
-
   init () {
-    render(this.eventsContainer, this.mainContainerElement);
-    render(this.newForm, this.eventsContainer.getElement());
+    render(this.eventsList, this.eventsContainerElement);
+    // render(this.newForm, this.eventsContainer.getElement());
+    // render(new HeaderFormView(), this.newForm.getElement().firstElementChild, RenderPosition.AFTERBEGIN);
+    // render(this.offersForm, this.eventDetailsContainer);
+    // render(new OfferItemFormView, this.offersForm.getElement().children[1]);
+    // render(new DestinationFormView, this.eventDetailsContainer);
 
-    render(new HeaderFormView(), this.newForm.getElement().firstElementChild, RenderPosition.AFTERBEGIN);
-    render(this.offersForm, this.eventDetailsContainer);
-    render(new OfferItemFormView, this.offersForm.getElement().children[1]);
-    render(new DestinationFormView, this.eventDetailsContainer);
-
-    for (let index = 0; index < EVENTS_NUMBER; index++) {
-      render(new EventItemView(), this.eventsContainer.getElement());
+    for (let i = 0; i < EVENTS_NUMBER; i++) {
+      render(new EventItemView(), this.eventsList.getElement());
     }
   }
 }

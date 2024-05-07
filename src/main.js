@@ -7,11 +7,10 @@ import { RenderPosition, render } from './render.js';
 const headerContainerElement = document.querySelector('.trip-main');
 const filtersContainerElement = headerContainerElement.querySelector('.trip-controls__filters');
 const mainContainerElement = document.querySelector('.trip-events');
-const eventsPresenter = new EventsPresenter(mainContainerElement);
-
 
 render(new TripInfoView(), headerContainerElement, RenderPosition.AFTERBEGIN);
 render(new FiltersView(), filtersContainerElement);
 render(new SortPanelView(), mainContainerElement);
 
+const eventsPresenter = new EventsPresenter({eventsContainer: mainContainerElement});
 eventsPresenter.init();

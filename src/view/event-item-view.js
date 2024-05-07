@@ -1,6 +1,5 @@
 import { createElement } from '../render.js';
 
-
 const createEventItemTemplate = () => `
 <li class="trip-events__item">
   <div class="event">
@@ -40,7 +39,6 @@ const createEventItemTemplate = () => `
   </div>
 </li>
 `;
-
 
 export default class EventItemView {
   getTemplate() {
