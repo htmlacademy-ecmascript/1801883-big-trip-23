@@ -1,6 +1,6 @@
 import { createElement } from '../render.js';
+import { EVENT_TYPES } from '../consts.js';
 
-const EVENT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 const IMAGE_LINKS = ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg'];
 
 
