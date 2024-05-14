@@ -1,6 +1,6 @@
 import { generateRandomInteger, flipCoin, getRandomArrayElement, getUnicRandomArrayElement, getRandomDate } from './utils.js';
 
-const EVENTS_NUMBER = 4;
+const EVENTS_NUMBER = 10;
 let events;
 
 

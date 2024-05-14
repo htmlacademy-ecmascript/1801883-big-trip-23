@@ -1,5 +1,6 @@
 import { createElement } from '../render.js';
 import { EVENT_TYPES } from '../consts.js';
+import { capitalizeFirstLetter } from '../utils.js';
 
 const IMAGE_LINKS = ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg'];
 
@@ -7,7 +8,7 @@ const IMAGE_LINKS = ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg'];
 const createEventTypeItem = (type) => `
   <div class="event__type-item">
     <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${type === 'flight' ? 'checked' : ''}>
-    <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type[0].toUpperCase() + type.slice(1)}</label>
+    <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${capitalizeFirstLetter(type)}</label>
   </div>
 `;
 

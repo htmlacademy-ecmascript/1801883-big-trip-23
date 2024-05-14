@@ -2,13 +2,13 @@ import { EVENT_TYPES } from '..//consts.js';
 import { generateRandomInteger, getUnicRandomArrayElement } from './utils.js';
 
 const OFFER_TITLES = [
-  'Upgrade to a business class',
-  'Switch to comfort class',
+  'Switch to comfort',
+  'Add breakfast',
   'Add luggage',
   'Luggage delivery',
   'Personal guide',
-  'Meet and greet services',
-  'Translator services',
+  'Meet service',
+  'Rent a car',
 ];
 let offers;
 

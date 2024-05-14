@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
 
+const MAX_TIME_SHIFT = 5000;
+
 
 const generateRandomInteger = (min = 0, max = 1000) => {
   const processedMin = Math.ceil(Math.min(min, max));
@@ -24,6 +26,6 @@ const getUnicRandomArrayElement = (items) => (
   }
 );
 
-const getRandomDate = (date) => dayjs(date).add(generateRandomInteger(), 'minute').toISOString();
+const getRandomDate = (date) => dayjs(date).add(generateRandomInteger(0, MAX_TIME_SHIFT), 'minute').toISOString();
 
 export{ generateRandomInteger, flipCoin, getRandomArrayElement, getUnicRandomArrayElement, getRandomDate };
