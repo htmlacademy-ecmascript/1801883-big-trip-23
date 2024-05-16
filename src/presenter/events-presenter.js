@@ -3,23 +3,28 @@ import EventItemView from '../view/event-item-view.js';
 import FormView from '../view/form-view.js';
 import { render } from '../render.js';
 
-const EVENTS_NUMBER = 3;
-
 
 export default class EventsPresenter {
 
-  eventsList = new EventsListView();
+  eventsListView = new EventsListView();
 
-  constructor ({eventsContainer}) {
+  constructor ({eventsContainer, model}) {
     this.eventsContainerElement = eventsContainer;
+    this.model = model;
   }
 
   init () {
-    render(this.eventsList, this.eventsContainerElement);
-    render(new FormView, this.eventsList.getElement());
+    this.destinations = [...this.model.getDestinations()];
+    this.offers = [...this.model.getOffers()];
+    this.events = [...this.model.getEvents()];
 
-    for (let i = 0; i < EVENTS_NUMBER; i++) {
-      render(new EventItemView(), this.eventsList.getElement());
+
+    render(this.eventsListView, this.eventsContainerElement);
+    render(new FormView({offers: this.offers, destinations: this.destinations}), this.eventsListView.getElement());
+    render(new FormView({event: this.events[0], offers: this.offers, destinations: this.destinations}), this.eventsListView.getElement());
+
+    for (let i = 1; i < this.events.length; i++) {
+      render(new EventItemView({event: this.events[i], offers: this.offers, destinations: this.destinations}), this.eventsListView.getElement());
     }
   }
 }
