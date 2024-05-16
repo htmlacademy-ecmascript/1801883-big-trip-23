@@ -18,8 +18,6 @@ export default class EventsPresenter {
     this.offers = [...this.model.getOffers()];
     this.events = [...this.model.getEvents()];
 
-    // console.log('Event: ', this.events[0]);
-    // console.log('------------------------------------------------------');
 
     render(this.eventsListView, this.eventsContainerElement);
     render(new FormView({offers: this.offers, destinations: this.destinations}), this.eventsListView.getElement());

@@ -9,52 +9,54 @@ const EMPTY_EVENT = {
   destination: null,
   isFavorite: false,
   offers: [],
-  type: undefined //EVENT_TYPES[0]
+  type: EVENT_TYPES[0]
 };
 
 
-const createEventTypeItem = (type) => `
+const createEventTypeItem = (type, selectedType) => `
   <div class="event__type-item">
-    <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${type === 'flight' ? 'checked' : ''}>
+    <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${type === selectedType ? 'checked' : ''}>
     <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${capitalizeFirstLetter(type)}</label>
   </div>
 `;
 
-const createHeader = () => `
+const createHeader = (id, basePrice, startDate, endDate, destination, allDestination, type) => `
     <header class="event__header">
       <div class="event__type-wrapper">
         <label class="event__type  event__type-btn" for="event-type-toggle-1">
           <span class="visually-hidden">Choose event type</span>
-          <img class="event__type-icon" width="17" height="17" src="img/icons/flight.png" alt="Event type icon">
+          <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
         </label>
         <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
         <div class="event__type-list">
           <fieldset class="event__type-group">
             <legend class="visually-hidden">Event type</legend>
-            ${EVENT_TYPES.map((value) => createEventTypeItem(value)).join('')}
+            ${EVENT_TYPES.map((value) => createEventTypeItem(value, type)).join('')}
           </fieldset>
         </div>
       </div>
 
       <div class="event__field-group  event__field-group--destination">
-        <label class="event__label  event__type-output" for="event-destination-1">
-          Flight
-        </label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="Chamonix" list="destination-list-1">
+        <label class="event__label  event__type-output" for="event-destination-1">${type ? capitalizeFirstLetter(type) : ''}</label>
+        <input
+          class="event__input event__input--destination"
+          id="event-destination-1"
+          type="text" name="event-destination"
+          value="${destination ? destination.name : ''}"
+          list="destination-list-1">
+
         <datalist id="destination-list-1">
-          <option value="Amsterdam"></option>
-          <option value="Geneva"></option>
-          <option value="Chamonix"></option>
+          ${allDestination.map((item) => `<option value="${item.name}"></option>`).join('')}
         </datalist>
       </div>
 
       <div class="event__field-group  event__field-group--time">
         <label class="visually-hidden" for="event-start-time-1">From</label>
-        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="18/03/19 12:25">
+        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${startDate}">
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">To</label>
-        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="18/03/19 13:35">
+        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${endDate}">
       </div>
 
       <div class="event__field-group  event__field-group--price">
@@ -62,17 +64,16 @@ const createHeader = () => `
           <span class="visually-hidden">Price</span>
           &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="160">
+        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
       </div>
 
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-      <button class="event__reset-btn" type="reset">Delete</button>
+      <button class="event__reset-btn" type="reset">${id ? 'Cancel' : 'Delete'}</button>
       <button class="event__rollup-btn" type="button">
         <span class="visually-hidden">Open event</span>
       </button>
     </header>
 `;
-// --------------------------------------------------
 
 
 const createOfferItem = ({id, title, price}, isChecked) => `
@@ -133,16 +134,11 @@ const createFormTemplate = (event, allOffers, allDestinations) => {
   const currentDestination = allDestinations.find((item) => (item.id === destination));
   const typeOffers = type ? allOffers.find((item) => (item.type === type)).offers : '';
 
-  // if (id) {
-  //   console.log('typeOffers ', typeOffers);
-  //   console.log('offers ', offers);
-  //   console.log();
-  // }
 
   return (
     `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
-        ${createHeader(id, basePrice, startDate, endDate, destination, type)}
+        ${createHeader(id, basePrice, startDate.dateHoursMinute, endDate.dateHoursMinute, currentDestination, allDestinations, type)}
         ${typeOffers.length !== 0 || currentDestination
       ? `
         <section class="event__details">
