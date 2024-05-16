@@ -18,13 +18,11 @@ export default class EventsPresenter {
     this.offers = [...this.model.getOffers()];
     this.events = [...this.model.getEvents()];
 
-    // console.log('Destinations: ', this.destinations);
-    // console.log('Offers: ', this.offers);
-    // console.log('Events: ', this.events);
+    // console.log('Event: ', this.events[0]);
     // console.log('------------------------------------------------------');
 
     render(this.eventsListView, this.eventsContainerElement);
-    render(new FormView, this.eventsListView.getElement());
+    render(new FormView({offers: this.offers, destinations: this.destinations}), this.eventsListView.getElement());
     render(new FormView({event: this.events[0], offers: this.offers, destinations: this.destinations}), this.eventsListView.getElement());
 
     for (let i = 1; i < this.events.length; i++) {

@@ -1,8 +1,16 @@
 import { createElement } from '../render.js';
 import { EVENT_TYPES } from '../consts.js';
-import { capitalizeFirstLetter } from '../utils.js';
+import { capitalizeFirstLetter, reformatDate } from '../utils.js';
 
-const IMAGE_LINKS = ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg'];
+const EMPTY_EVENT = {
+  basePrice: 0,
+  dateFrom: new Date(),
+  dateTo: new Date(),
+  destination: null,
+  isFavorite: false,
+  offers: [],
+  type: undefined //EVENT_TYPES[0]
+};
 
 
 const createEventTypeItem = (type) => `
@@ -64,63 +72,98 @@ const createHeader = () => `
       </button>
     </header>
 `;
+// --------------------------------------------------
 
 
-const createOfferItem = () => `
+const createOfferItem = ({id, title, price}, isChecked) => `
   <div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked>
-    <label class="event__offer-label" for="event-offer-luggage-1">
-      <span class="event__offer-title">Add luggage</span>
+    <input
+      class="event__offer-checkbox visually-hidden"
+      id="${id}"
+      type="checkbox"
+      name="event-offer-${title.toLowerCase().replace(/ /g, '-')}"
+      ${isChecked ? 'checked' : ''}>
+
+    <label class="event__offer-label" for="${id}">
+      <span class="event__offer-title">${title}</span>
       &plus;&euro;&nbsp;
-      <span class="event__offer-price">30</span>
+      <span class="event__offer-price">${price}</span>
     </label>
   </div>
 `;
 
-const createOffers = () => `
+const createOffers = (typeOffers, selectedOffers) => `
   <section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
     <div class="event__available-offers">
-    ${createOfferItem()}
+    ${typeOffers.map((offer) => createOfferItem(offer, selectedOffers.includes(offer.id))).join('')}
     </div>
   </section>
 `;
 
 
-const createImageDestination = (imageLink) => `
-  <img class="event__photo" src="img/photos/${imageLink}" alt="Event photo"></img>
+const createImageDestination = ({src, description}) => `
+  <img class="event__photo" src="${src}" alt="${description}"></img>
 `;
 
-const createDestination = () => `
+const createDestination = ({description, pictures}) => `
   <section class="event__section  event__section--destination">
     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-    <p class="event__destination-description">Geneva is a city in Switzerland that lies at the southern tip of expansive Lac Léman (Lake Geneva). Surrounded by the Alps and Jura mountains, the city has views of dramatic Mont Blanc.</p>
+    <p class="event__destination-description">${description}</p>
 
-    <div class="event__photos-container">
-      <div class="event__photos-tape">
-        ${IMAGE_LINKS.map((value) => createImageDestination(value)).join('')}
-      </div>
-    </div>
+    ${ pictures.length !== 0
+    ? `
+        <div class="event__photos-container">
+          <div class="event__photos-tape">
+            ${pictures.map((image) => createImageDestination(image)).join('')}
+          </div>
+        </div>
+        `
+    : ''}
   </section>
 `;
 
 
-const createFormTemplate = () => `
-<li class="trip-events__item">
-  <form class="event event--edit" action="#" method="post">
-    ${createHeader()}
-    <section class="event__details">
-      ${createOffers()}
-      ${createDestination()}
-    </section>
-  </form>
-</li>
-`;
+const createFormTemplate = (event, allOffers, allDestinations) => {
+  const {id, basePrice, dateFrom, dateTo, destination, offers, type} = event;
+
+  const startDate = reformatDate(dateFrom);
+  const endDate = reformatDate(dateTo);
+  const currentDestination = allDestinations.find((item) => (item.id === destination));
+  const typeOffers = type ? allOffers.find((item) => (item.type === type)).offers : '';
+
+  // if (id) {
+  //   console.log('typeOffers ', typeOffers);
+  //   console.log('offers ', offers);
+  //   console.log();
+  // }
+
+  return (
+    `<li class="trip-events__item">
+      <form class="event event--edit" action="#" method="post">
+        ${createHeader(id, basePrice, startDate, endDate, destination, type)}
+        ${typeOffers.length !== 0 || currentDestination
+      ? `
+        <section class="event__details">
+          ${typeOffers.length !== 0 ? createOffers(typeOffers, offers) : ''}
+          ${currentDestination ? createDestination(currentDestination) : ''}
+        </section>`
+      : ''}
+      </form>
+    </li>`
+  );
+};
 
 export default class FormView {
+  constructor({event = EMPTY_EVENT, offers, destinations}) {
+    this.event = event;
+    this.allOffers = offers;
+    this.allDestinations = destinations;
+  }
+
   getTemplate() {
-    return createFormTemplate();
+    return createFormTemplate(this.event, this.allOffers, this.allDestinations);
   }
 
   getElement() {
