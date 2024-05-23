@@ -9,7 +9,7 @@ const EMPTY_EVENT = {
   destination: null,
   isFavorite: false,
   offers: [],
-  type: EVENT_TYPES[0]
+  type: null
 };
 
 
@@ -25,7 +25,7 @@ const createHeader = (id, basePrice, startDate, endDate, destination, allDestina
       <div class="event__type-wrapper">
         <label class="event__type  event__type-btn" for="event-type-toggle-1">
           <span class="visually-hidden">Choose event type</span>
-          <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
+          ${type ? `<img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">` : ''}
         </label>
         <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -113,7 +113,7 @@ const createDestination = ({description, pictures}) => `
     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
     <p class="event__destination-description">${description}</p>
 
-    ${ pictures.length !== 0
+    ${ pictures.length > 0
     ? `
         <div class="event__photos-container">
           <div class="event__photos-tape">
@@ -139,10 +139,10 @@ const createFormTemplate = (event, allOffers, allDestinations) => {
     `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
         ${createHeader(id, basePrice, startDate.dateHoursMinute, endDate.dateHoursMinute, currentDestination, allDestinations, type)}
-        ${typeOffers.length !== 0 || currentDestination
+        ${typeOffers.length > 0 || currentDestination
       ? `
         <section class="event__details">
-          ${typeOffers.length !== 0 ? createOffers(typeOffers, offers) : ''}
+          ${typeOffers.length > 0 ? createOffers(typeOffers, offers) : ''}
           ${currentDestination ? createDestination(currentDestination) : ''}
         </section>`
       : ''}

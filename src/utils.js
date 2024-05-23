@@ -21,9 +21,12 @@ const calculateDuration = (startDate, endDate) => {
 
   if (durationValue.days()) {
     return durationValue.format('DD[D] HH[H] mm[M]',);
-  } else if (durationValue.hours()) {
+  }
+
+  if (durationValue.hours()) {
     return durationValue.format('HH[H] mm[M]');
   }
+
   return durationValue.format('mm[M]');
 };
 
