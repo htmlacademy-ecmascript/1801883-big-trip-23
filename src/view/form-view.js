@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view';
 import { EVENT_TYPES } from '../consts.js';
 import { capitalizeFirstLetter, reformatDate } from '../utils.js';
 
@@ -151,26 +151,19 @@ const createFormTemplate = (event, allOffers, allDestinations) => {
   );
 };
 
-export default class FormView {
+export default class FormView extends AbstractView {
+  #event = null;
+  #allOffers = null;
+  #allDestinations = null;
+
   constructor({event = EMPTY_EVENT, offers, destinations}) {
-    this.event = event;
-    this.allOffers = offers;
-    this.allDestinations = destinations;
+    super();
+    this.#event = event;
+    this.#allOffers = offers;
+    this.#allDestinations = destinations;
   }
 
-  getTemplate() {
-    return createFormTemplate(this.event, this.allOffers, this.allDestinations);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createFormTemplate(this.#event, this.#allOffers, this.#allDestinations);
   }
 }

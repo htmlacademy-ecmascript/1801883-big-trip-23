@@ -4,19 +4,19 @@ import { getMockEvents } from '../mock/events-data.js';
 
 
 export default class EventsModel {
-  offers = getMockOffers();
-  destinations = getMockDestinations();
-  events = getMockEvents(this.offers, this.destinations);
+  #offers = getMockOffers();
+  #destinations = getMockDestinations();
+  #events = getMockEvents(this.#offers, this.#destinations);
 
-  getEvents() {
-    return this.events;
+  get offers() {
+    return this.#offers;
   }
 
-  getOffers() {
-    return this.offers;
+  get destinations() {
+    return this.#destinations;
   }
 
-  getDestinations() {
-    return this.destinations;
+  get events() {
+    return this.#events;
   }
 }
