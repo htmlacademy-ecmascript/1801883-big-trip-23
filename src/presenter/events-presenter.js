@@ -65,12 +65,16 @@ export default class EventsPresenter {
     render(eventItemView, this.#eventsListView.element);
   }
 
+  #renderWorkspace() {
+    render(this.#eventsListView, this.#eventsContainerElement);
+    this.#events.forEach((item) => this.#renderEvent(item, this.#offers, this.#destinations));
+  }
+
   init () {
     this.#destinations = [...this.#model.destinations];
     this.#offers = [...this.#model.offers];
     this.#events = [...this.#model.events];
 
-    render(this.#eventsListView, this.#eventsContainerElement);
-    this.#events.forEach((item) => this.#renderEvent(item, this.#offers, this.#destinations));
+    this.#renderWorkspace();
   }
 }
