@@ -36,13 +36,24 @@ export default class EventsPresenter {
       onCancelClick: () => replaceFormToEvent(),
     });
 
-    function replaceEventToForm() {
+
+    const onEscKeydown = (evt) => {
+      if (evt.key === 'Escape') {
+        evt.preventDefault();
+        replaceFormToEvent();
+      }
+    };
+
+    function replaceEventToForm () {
       replace(formEditView, eventItemView);
+      document.addEventListener('keydown', onEscKeydown);
     }
 
-    function replaceFormToEvent() {
+    function replaceFormToEvent () {
       replace(eventItemView, formEditView);
+      document.removeEventListener('keydown', onEscKeydown);
     }
+
 
     render(eventItemView, this.#eventsListView.element);
   }
