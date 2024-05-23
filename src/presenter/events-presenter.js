@@ -20,40 +20,47 @@ export default class EventsPresenter {
 
 
   #renderEvent(event, offers, destinations) {
+    let isEditMode = false;
 
     const eventItemView = new EventItemView({
       event,
       offers,
       destinations,
-      onButtonClick: () => replaceEventToForm()
+      onButtonClick: () => switchEventAndForm()
     });
 
     const formEditView = new FormView({
       event,
       offers,
       destinations,
-      onFormSubmit: () => replaceFormToEvent(),
-      onCancelClick: () => replaceFormToEvent(),
+      onFormSubmit: () => switchEventAndForm(),
+      onCancelClick: () => switchEventAndForm(),
     });
 
 
     const onEscKeydown = (evt) => {
       if (evt.key === 'Escape') {
         evt.preventDefault();
-        replaceFormToEvent();
+        switchEventAndForm();
       }
     };
 
-    function replaceEventToForm () {
-      replace(formEditView, eventItemView);
-      document.addEventListener('keydown', onEscKeydown);
-    }
+    function switchEventAndForm () {
+      let newComponent;
+      let oldComponent;
 
-    function replaceFormToEvent () {
-      replace(eventItemView, formEditView);
-      document.removeEventListener('keydown', onEscKeydown);
+      if (isEditMode) {
+        newComponent = eventItemView;
+        oldComponent = formEditView;
+        document.removeEventListener('keydown', onEscKeydown);
+      } else {
+        newComponent = formEditView;
+        oldComponent = eventItemView;
+        document.addEventListener('keydown', onEscKeydown);
+      }
+      isEditMode = !isEditMode;
+      replace(newComponent, oldComponent);
     }
-
 
     render(eventItemView, this.#eventsListView.element);
   }
