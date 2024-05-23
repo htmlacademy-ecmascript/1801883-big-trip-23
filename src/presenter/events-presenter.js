@@ -1,4 +1,4 @@
-import { render } from '../framework/render.js';
+import { render, replace } from '../framework/render.js';
 import EventsListView from '../view/events-list-view.js';
 import EventItemView from '../view/event-item-view.js';
 import FormView from '../view/form-view.js';
@@ -18,9 +18,31 @@ export default class EventsPresenter {
     this.#model = model;
   }
 
+
   #renderEvent(event, offers, destinations) {
-    const eventItemView = new EventItemView({event, offers, destinations});
-    // const formEditView = new FormView({event, offers, destinations});
+
+    const eventItemView = new EventItemView({
+      event,
+      offers,
+      destinations,
+      onButtonClick: () => replaceEventToForm()
+    });
+
+    const formEditView = new FormView({
+      event,
+      offers,
+      destinations,
+      onFormSubmit: () => replaceFormToEvent(),
+      onCancelClick: () => replaceFormToEvent(),
+    });
+
+    function replaceEventToForm() {
+      replace(formEditView, eventItemView);
+    }
+
+    function replaceFormToEvent() {
+      replace(eventItemView, formEditView);
+    }
 
     render(eventItemView, this.#eventsListView.element);
   }
@@ -31,9 +53,6 @@ export default class EventsPresenter {
     this.#events = [...this.#model.events];
 
     render(this.#eventsListView, this.#eventsContainerElement);
-    render(new FormView({offers: this.#offers, destinations: this.#destinations}), this.#eventsListView.element);
-    render(new FormView({event: this.#events[0], offers: this.#offers, destinations: this.#destinations}), this.#eventsListView.element);
-
     this.#events.forEach((item) => this.#renderEvent(item, this.#offers, this.#destinations));
   }
 }

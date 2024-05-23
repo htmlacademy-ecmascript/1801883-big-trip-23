@@ -155,15 +155,32 @@ export default class FormView extends AbstractView {
   #event = null;
   #allOffers = null;
   #allDestinations = null;
+  #onFormSubmitCallback = null;
+  #onCancelClickCallback = null;
 
-  constructor({event = EMPTY_EVENT, offers, destinations}) {
+  constructor({event = EMPTY_EVENT, offers, destinations, onFormSubmit, onCancelClick}) {
     super();
     this.#event = event;
     this.#allOffers = offers;
     this.#allDestinations = destinations;
+    this.#onFormSubmitCallback = onFormSubmit;
+    this.#onCancelClickCallback = onCancelClick;
+    this.element.querySelector('form.event--edit').addEventListener('submit', this.#onFormSubmit);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCancleClick);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onCancleClick);
   }
 
   get template() {
     return createFormTemplate(this.#event, this.#allOffers, this.#allDestinations);
   }
+
+  #onFormSubmit = (evt) => {
+    evt.preventDefault();
+    this.#onFormSubmitCallback();
+  };
+
+  #onCancleClick = (evt) => {
+    evt.preventDefault();
+    this.#onCancelClickCallback();
+  };
 }
