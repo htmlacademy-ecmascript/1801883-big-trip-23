@@ -26,15 +26,15 @@ export default class EventsPresenter {
       event,
       offers,
       destinations,
-      onRollupButtonClick: () => switchEventAndForm()
+      onRollupButtonClick: switchEventAndForm
     });
 
     const formEditView = new FormView({
       event,
       offers,
       destinations,
-      onFormSubmit: () => switchEventAndForm(),
-      onCancelClick: () => switchEventAndForm(),
+      onFormSubmit: switchEventAndForm,
+      onCancelClick: switchEventAndForm
     });
 
 
