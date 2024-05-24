@@ -166,8 +166,8 @@ export default class FormView extends AbstractView {
     this.#onFormSubmitCallback = onFormSubmit;
     this.#onCancelClickCallback = onCancelClick;
     this.element.querySelector('form.event--edit').addEventListener('submit', this.#onFormSubmit);
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCancleClick);
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onCancleClick);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCancelClick);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onCancelClick);
   }
 
   get template() {
@@ -179,7 +179,7 @@ export default class FormView extends AbstractView {
     this.#onFormSubmitCallback();
   };
 
-  #onCancleClick = (evt) => {
+  #onCancelClick = (evt) => {
     evt.preventDefault();
     this.#onCancelClickCallback();
   };

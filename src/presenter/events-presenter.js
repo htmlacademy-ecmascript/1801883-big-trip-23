@@ -26,7 +26,7 @@ export default class EventsPresenter {
       event,
       offers,
       destinations,
-      onButtonClick: () => switchEventAndForm()
+      onRollupButtonClick: () => switchEventAndForm()
     });
 
     const formEditView = new FormView({
@@ -65,7 +65,7 @@ export default class EventsPresenter {
     render(eventItemView, this.#eventsListView.element);
   }
 
-  #renderWorkspace() {
+  #renderEventsList() {
     render(this.#eventsListView, this.#eventsContainerElement);
     this.#events.forEach((item) => this.#renderEvent(item, this.#offers, this.#destinations));
   }
@@ -75,6 +75,6 @@ export default class EventsPresenter {
     this.#offers = [...this.#model.offers];
     this.#events = [...this.#model.events];
 
-    this.#renderWorkspace();
+    this.#renderEventsList();
   }
 }
