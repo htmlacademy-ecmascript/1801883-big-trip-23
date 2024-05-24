@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view';
 
 const SORT_TYPES = [
   {name: 'day', default: 'checked'},
@@ -21,20 +21,8 @@ const createSortPanelTemplate = () => `
 </form>
 `;
 
-export default class SortPanelView {
-  getTemplate() {
+export default class SortPanelView extends AbstractView {
+  get template() {
     return createSortPanelTemplate();
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }

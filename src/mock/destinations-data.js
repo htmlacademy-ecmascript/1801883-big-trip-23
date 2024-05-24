@@ -18,7 +18,6 @@ const MIN_DESCRIPTIONS_NUMBER = 1;
 const MAX_DESCRIPTIONS_NUMBER = 5;
 const MIN_IMAGE_NUMBER = 0;
 const MAX_IMAGE_NUMBER = 5;
-let destinations;
 
 
 const generateDestination = (index) => {
@@ -42,12 +41,13 @@ const generateDestination = (index) => {
   };
 };
 
-const getMockDestinations = () => {
-  if (!destinations) {
-    destinations = Array.from({ length: CITIES.length }, (_, index) => generateDestination(index));
-  }
+const generateDestinations = () => {
+  const destinations = Array.from({ length: CITIES.length }, (_, index) => generateDestination(index));
 
-  return destinations;
+  return () => destinations;
 };
+
+const getMockDestinations = generateDestinations();
+
 
 export { getMockDestinations };

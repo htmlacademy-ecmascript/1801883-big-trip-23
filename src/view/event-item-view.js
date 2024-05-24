@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view';
 import { capitalizeFirstLetter, reformatDate, calculateDuration } from '../utils.js';
 
 
@@ -66,26 +66,27 @@ const createEventItemTemplate = (event, allOffers, allDestinations) => {
   );
 };
 
-export default class EventItemView {
-  constructor({event, offers, destinations}) {
-    this.event = event;
-    this.allOffers = offers;
-    this.allDestinations = destinations;
+export default class EventItemView extends AbstractView {
+  #event = null;
+  #allOffers = null;
+  #allDestinations = null;
+  #onButtonClickCallback = null;
+
+  constructor({event, offers, destinations, onRollupButtonClick}) {
+    super();
+    this.#event = event;
+    this.#allOffers = offers;
+    this.#allDestinations = destinations;
+    this.#onButtonClickCallback = onRollupButtonClick;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onRollupButtonClick);
   }
 
-  getTemplate() {
-    return createEventItemTemplate(this.event, this.allOffers, this.allDestinations);
+  get template() {
+    return createEventItemTemplate(this.#event, this.#allOffers, this.#allDestinations);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #onRollupButtonClick = (evt) => {
+    evt.preventDefault();
+    this.#onButtonClickCallback();
+  };
 }

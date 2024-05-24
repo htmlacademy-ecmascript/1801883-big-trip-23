@@ -1,7 +1,6 @@
 import { generateRandomInteger, flipCoin, getRandomArrayElement, getUnicRandomArrayElement, getRandomDate } from './utils.js';
 
 const EVENTS_NUMBER = 10;
-let events;
 
 
 const generateEvent = (index, offers, destinations) => {
@@ -24,12 +23,18 @@ const generateEvent = (index, offers, destinations) => {
   };
 };
 
-const getMockEvents = (offers, destinations) => {
-  if (!events) {
-    events = Array.from({ length: EVENTS_NUMBER }, (_, index) => generateEvent(index, offers, destinations));
-  }
+const generateEvents = () => {
+  let events;
 
-  return events;
+  return (offers, destinations) => {
+    if (!events) {
+      events = Array.from({ length: EVENTS_NUMBER }, (_, index) => generateEvent(index, offers, destinations));
+    }
+
+    return events;
+  };
 };
+
+const getMockEvents = generateEvents();
 
 export { getMockEvents };

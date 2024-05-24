@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view';
 import { EVENT_TYPES } from '../consts.js';
 import { capitalizeFirstLetter, reformatDate } from '../utils.js';
 
@@ -9,7 +9,7 @@ const EMPTY_EVENT = {
   destination: null,
   isFavorite: false,
   offers: [],
-  type: EVENT_TYPES[0]
+  type: null
 };
 
 
@@ -25,7 +25,7 @@ const createHeader = (id, basePrice, startDate, endDate, destination, allDestina
       <div class="event__type-wrapper">
         <label class="event__type  event__type-btn" for="event-type-toggle-1">
           <span class="visually-hidden">Choose event type</span>
-          <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
+          ${type ? `<img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">` : ''}
         </label>
         <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -113,7 +113,7 @@ const createDestination = ({description, pictures}) => `
     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
     <p class="event__destination-description">${description}</p>
 
-    ${ pictures.length !== 0
+    ${ pictures.length > 0
     ? `
         <div class="event__photos-container">
           <div class="event__photos-tape">
@@ -139,10 +139,10 @@ const createFormTemplate = (event, allOffers, allDestinations) => {
     `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
         ${createHeader(id, basePrice, startDate.dateHoursMinute, endDate.dateHoursMinute, currentDestination, allDestinations, type)}
-        ${typeOffers.length !== 0 || currentDestination
+        ${typeOffers.length > 0 || currentDestination
       ? `
         <section class="event__details">
-          ${typeOffers.length !== 0 ? createOffers(typeOffers, offers) : ''}
+          ${typeOffers.length > 0 ? createOffers(typeOffers, offers) : ''}
           ${currentDestination ? createDestination(currentDestination) : ''}
         </section>`
       : ''}
@@ -151,26 +151,36 @@ const createFormTemplate = (event, allOffers, allDestinations) => {
   );
 };
 
-export default class FormView {
-  constructor({event = EMPTY_EVENT, offers, destinations}) {
-    this.event = event;
-    this.allOffers = offers;
-    this.allDestinations = destinations;
+export default class FormView extends AbstractView {
+  #event = null;
+  #allOffers = null;
+  #allDestinations = null;
+  #onFormSubmitCallback = null;
+  #onCancelClickCallback = null;
+
+  constructor({event = EMPTY_EVENT, offers, destinations, onFormSubmit, onCancelClick}) {
+    super();
+    this.#event = event;
+    this.#allOffers = offers;
+    this.#allDestinations = destinations;
+    this.#onFormSubmitCallback = onFormSubmit;
+    this.#onCancelClickCallback = onCancelClick;
+    this.element.querySelector('form.event--edit').addEventListener('submit', this.#onFormSubmit);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCancelClick);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onCancelClick);
   }
 
-  getTemplate() {
-    return createFormTemplate(this.event, this.allOffers, this.allDestinations);
+  get template() {
+    return createFormTemplate(this.#event, this.#allOffers, this.#allDestinations);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
+  #onFormSubmit = (evt) => {
+    evt.preventDefault();
+    this.#onFormSubmitCallback();
+  };
 
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #onCancelClick = (evt) => {
+    evt.preventDefault();
+    this.#onCancelClickCallback();
+  };
 }

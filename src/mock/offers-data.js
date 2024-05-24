@@ -10,7 +10,6 @@ const OFFER_TITLES = [
   'Meet service',
   'Rent a car',
 ];
-let offers;
 
 
 const generateOffer = (index, getUnicOfferCallBack) => (
@@ -21,22 +20,22 @@ const generateOffer = (index, getUnicOfferCallBack) => (
   }
 );
 
-const generateOffers = () => {
+const generateTypeOffers = () => {
   const getUnicOffer = getUnicRandomArrayElement([...OFFER_TITLES]);
   return Array.from({ length: generateRandomInteger(0, OFFER_TITLES.length) }, (_, index) => generateOffer(index, getUnicOffer));
 };
 
-const getMockOffers = () => {
-  if (!offers) {
-    offers = EVENT_TYPES.map((type) => (
-      {
-        type: type,
-        offers: generateOffers(),
-      }
-    ));
-  }
+const generateOffers = () => {
+  const offers = EVENT_TYPES.map((type) => (
+    {
+      type: type,
+      offers: generateTypeOffers(),
+    }
+  ));
 
-  return offers;
+  return () => offers;
 };
+
+const getMockOffers = generateOffers();
 
 export { getMockOffers };

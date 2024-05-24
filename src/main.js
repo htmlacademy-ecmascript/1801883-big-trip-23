@@ -1,9 +1,9 @@
+import { RenderPosition, render } from './framework/render.js';
 import TripInfoView from './view/trip-info-view.js';
 import FiltersView from './view/filters-view.js';
 import SortPanelView from './view/sort-panel-view.js';
 import EventsPresenter from './presenter/events-presenter.js';
 import EventsModel from './model/events-model.js';
-import { RenderPosition, render } from './render.js';
 
 const headerContainerElement = document.querySelector('.trip-main');
 const filtersContainerElement = headerContainerElement.querySelector('.trip-controls__filters');

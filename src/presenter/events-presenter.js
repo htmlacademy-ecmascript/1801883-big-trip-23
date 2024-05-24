@@ -1,30 +1,80 @@
+import { render, replace } from '../framework/render.js';
 import EventsListView from '../view/events-list-view.js';
 import EventItemView from '../view/event-item-view.js';
 import FormView from '../view/form-view.js';
-import { render } from '../render.js';
 
 
 export default class EventsPresenter {
+  #eventsContainerElement = null;
+  #model = null;
+  #eventsListView = new EventsListView();
 
-  eventsListView = new EventsListView();
+  #destinations = [];
+  #offers = [];
+  #events = [];
 
   constructor ({eventsContainer, model}) {
-    this.eventsContainerElement = eventsContainer;
-    this.model = model;
+    this.#eventsContainerElement = eventsContainer;
+    this.#model = model;
+  }
+
+
+  #renderEvent(event, offers, destinations) {
+    let isEditMode = false;
+
+    const eventItemView = new EventItemView({
+      event,
+      offers,
+      destinations,
+      onRollupButtonClick: () => switchEventAndForm()
+    });
+
+    const formEditView = new FormView({
+      event,
+      offers,
+      destinations,
+      onFormSubmit: () => switchEventAndForm(),
+      onCancelClick: () => switchEventAndForm(),
+    });
+
+
+    const onEscKeydown = (evt) => {
+      if (evt.key === 'Escape') {
+        evt.preventDefault();
+        switchEventAndForm();
+      }
+    };
+
+    function switchEventAndForm () {
+      let newComponent;
+      let oldComponent;
+
+      if (isEditMode) {
+        newComponent = eventItemView;
+        oldComponent = formEditView;
+        document.removeEventListener('keydown', onEscKeydown);
+      } else {
+        newComponent = formEditView;
+        oldComponent = eventItemView;
+        document.addEventListener('keydown', onEscKeydown);
+      }
+      isEditMode = !isEditMode;
+      replace(newComponent, oldComponent);
+    }
+
+    render(eventItemView, this.#eventsListView.element);
+  }
+
+  #renderEventsList() {
+    render(this.#eventsListView, this.#eventsContainerElement);
+    this.#events.forEach((item) => this.#renderEvent(item, this.#offers, this.#destinations));
   }
 
   init () {
-    this.destinations = [...this.model.getDestinations()];
-    this.offers = [...this.model.getOffers()];
-    this.events = [...this.model.getEvents()];
+    this.#destinations = [...this.#model.destinations];
+    this.#offers = [...this.#model.offers];
+    this.#events = [...this.#model.events];
 
-
-    render(this.eventsListView, this.eventsContainerElement);
-    render(new FormView({offers: this.offers, destinations: this.destinations}), this.eventsListView.getElement());
-    render(new FormView({event: this.events[0], offers: this.offers, destinations: this.destinations}), this.eventsListView.getElement());
-
-    for (let i = 1; i < this.events.length; i++) {
-      render(new EventItemView({event: this.events[i], offers: this.offers, destinations: this.destinations}), this.eventsListView.getElement());
-    }
+    this.#renderEventsList();
   }
 }
