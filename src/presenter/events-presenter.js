@@ -1,5 +1,6 @@
 import { render, replace } from '../framework/render.js';
 import SortPanelView from '../view/sort-panel-view.js';
+import EmptyListView from '../view/empty-list-view';
 import EventsListView from '../view/events-list-view.js';
 import EventItemView from '../view/event-item-view.js';
 import FormView from '../view/form-view.js';
@@ -14,10 +15,15 @@ export default class EventsPresenter {
   #destinations = [];
   #offers = [];
   #events = [];
+  #currentFilter = 'everything';
 
   constructor ({eventsContainer, model}) {
     this.#eventsContainerElement = eventsContainer;
     this.#model = model;
+  }
+
+  #renderEmptyList() {
+    render(new EmptyListView({currentFilter: this.#currentFilter}), this.#eventsContainerElement);
   }
 
   #renderSortPanel() {
@@ -75,10 +81,15 @@ export default class EventsPresenter {
     this.#events.forEach((item) => this.#renderEvent(item, this.#offers, this.#destinations));
   }
 
-  init () {
+  init() {
     this.#destinations = [...this.#model.destinations];
     this.#offers = [...this.#model.offers];
     this.#events = [...this.#model.events];
+
+    if (this.#events.length === 0) {
+      this.#renderEmptyList();
+      return;
+    }
 
     this.#renderSortPanel();
     this.#renderEventsList();
