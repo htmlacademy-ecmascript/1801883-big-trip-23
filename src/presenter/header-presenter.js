@@ -7,8 +7,8 @@ export default class HeaderPresenter {
   #tripInfoContainerElement = null;
   #filtersContainerElement = null;
   #model = null;
-  #tripInfoView = new TripInfoView();
-  #filtersView = new FiltersView();
+  #tripInfoView = null;
+  #filtersView = null;
 
   #events = [];
 
@@ -19,10 +19,12 @@ export default class HeaderPresenter {
   }
 
   #renderTripInfo() {
+    this.#tripInfoView = new TripInfoView();
     render(this.#tripInfoView, this.#tripInfoContainerElement, RenderPosition.AFTERBEGIN);
   }
 
   #renderFilters() {
+    this.#filtersView = new FiltersView();
     render(this.#filtersView, this.#filtersContainerElement);
   }
 

@@ -9,6 +9,7 @@ import FormView from '../view/form-view.js';
 export default class EventsPresenter {
   #eventsContainerElement = null;
   #model = null;
+  #emptyListView = null;
   #sortPanelView = new SortPanelView();
   #eventsListView = new EventsListView();
 
@@ -23,7 +24,8 @@ export default class EventsPresenter {
   }
 
   #renderEmptyList() {
-    render(new EmptyListView({currentFilter: this.#currentFilter}), this.#eventsContainerElement);
+    this.#emptyListView = new EmptyListView({currentFilter: this.#currentFilter});
+    render(this.#emptyListView, this.#eventsContainerElement);
   }
 
   #renderSortPanel() {
