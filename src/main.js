@@ -1,22 +1,20 @@
-import { RenderPosition, render } from './framework/render.js';
-import TripInfoView from './view/trip-info-view.js';
-import FiltersView from './view/filters-view.js';
-import SortPanelView from './view/sort-panel-view.js';
-import EventsPresenter from './presenter/events-presenter.js';
 import EventsModel from './model/events-model.js';
+import HeaderPresenter from './presenter/header-presenter.js';
+import EventsPresenter from './presenter/events-presenter.js';
 
-const headerContainerElement = document.querySelector('.trip-main');
-const filtersContainerElement = headerContainerElement.querySelector('.trip-controls__filters');
-const mainContainerElement = document.querySelector('.trip-events');
-
-
-render(new TripInfoView(), headerContainerElement, RenderPosition.AFTERBEGIN);
-render(new FiltersView(), filtersContainerElement);
-render(new SortPanelView(), mainContainerElement);
 
 const eventsModel = new EventsModel;
-const eventsPresenter = new EventsPresenter({
-  eventsContainer: mainContainerElement,
+
+const headerPresenter = new HeaderPresenter({
+  tripInfoContainer: document.querySelector('.trip-main'),
+  filtersContainer: document.querySelector('.trip-controls__filters'),
   model: eventsModel,
 });
+
+const eventsPresenter = new EventsPresenter({
+  eventsContainer: document.querySelector('.trip-events'),
+  model: eventsModel,
+});
+
+headerPresenter.init();
 eventsPresenter.init();

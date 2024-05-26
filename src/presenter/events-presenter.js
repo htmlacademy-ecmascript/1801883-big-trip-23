@@ -1,4 +1,5 @@
 import { render, replace } from '../framework/render.js';
+import SortPanelView from '../view/sort-panel-view.js';
 import EventsListView from '../view/events-list-view.js';
 import EventItemView from '../view/event-item-view.js';
 import FormView from '../view/form-view.js';
@@ -7,6 +8,7 @@ import FormView from '../view/form-view.js';
 export default class EventsPresenter {
   #eventsContainerElement = null;
   #model = null;
+  #sortPanelView = new SortPanelView();
   #eventsListView = new EventsListView();
 
   #destinations = [];
@@ -18,6 +20,9 @@ export default class EventsPresenter {
     this.#model = model;
   }
 
+  #renderSortPanel() {
+    render(this.#sortPanelView, this.#eventsContainerElement);
+  }
 
   #renderEvent(event, offers, destinations) {
     let isEditMode = false;
@@ -75,6 +80,7 @@ export default class EventsPresenter {
     this.#offers = [...this.#model.offers];
     this.#events = [...this.#model.events];
 
+    this.#renderSortPanel();
     this.#renderEventsList();
   }
 }
