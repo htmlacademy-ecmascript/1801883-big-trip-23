@@ -11,6 +11,7 @@ export default class HeaderPresenter {
   #tripInfoView = null;
   #filtersView = null;
 
+  #destinations = [];
   #events = [];
   #filteredEvents = new Object();
   #currentFilter = 'everything';
@@ -22,7 +23,12 @@ export default class HeaderPresenter {
   }
 
   #renderTripInfo() {
-    this.#tripInfoView = new TripInfoView();
+    this.#tripInfoView = new TripInfoView(
+      {
+        events: this.#events,
+        destinations: this.#destinations
+      }
+    );
     render(this.#tripInfoView, this.#tripInfoContainerElement, RenderPosition.AFTERBEGIN);
   }
 
@@ -43,6 +49,7 @@ export default class HeaderPresenter {
   }
 
   init () {
+    this.#destinations = [...this.#model.destinations];
     this.#events = [...this.#model.events];
 
     this.#renderTripInfo();
