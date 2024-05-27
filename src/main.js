@@ -9,14 +9,14 @@ const headerPresenter = new HeaderPresenter(
   {
     tripInfoContainer: document.querySelector('.trip-main'),
     filtersContainer: document.querySelector('.trip-controls__filters'),
-    model: eventsModel,
+    eventsModel: eventsModel,
   }
 );
 
 const eventsPresenter = new EventsPresenter(
   {
     eventsContainer: document.querySelector('.trip-events'),
-    model: eventsModel,
+    eventsModel: eventsModel,
   }
 );
 

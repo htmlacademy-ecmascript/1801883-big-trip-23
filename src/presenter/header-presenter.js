@@ -13,13 +13,13 @@ export default class HeaderPresenter {
 
   #destinations = [];
   #events = [];
-  #filteredEvents = new Object();
-  #currentFilter = 'everything';
+  #filteredEvents = {};
+  #currentFilter = Filters.EVERYTHING.name;
 
-  constructor ({tripInfoContainer, filtersContainer, model}) {
+  constructor ({tripInfoContainer, filtersContainer, eventsModel}) {
     this.#tripInfoContainerElement = tripInfoContainer;
     this.#filtersContainerElement = filtersContainer;
-    this.#model = model;
+    this.#model = eventsModel;
   }
 
   #renderTripInfo() {
@@ -33,7 +33,6 @@ export default class HeaderPresenter {
   }
 
   #renderFilters() {
-    // Q? Делать фильтрацию тут? Или лучше в модели? Или может ещё где то?
     Object.values(Filters).forEach((filter) => {
       this.#filteredEvents[filter.name] = filter.filterMethod(this.#events);
     });

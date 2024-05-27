@@ -1,4 +1,5 @@
 import { render, replace } from '../framework/render.js';
+import { Filters } from '../consts.js';
 import SortPanelView from '../view/sort-panel-view.js';
 import EmptyListView from '../view/empty-list-view';
 import EventsListView from '../view/events-list-view.js';
@@ -16,11 +17,11 @@ export default class EventsPresenter {
   #destinations = [];
   #offers = [];
   #events = [];
-  #currentFilter = 'everything';
+  #currentFilter = Filters.EVERYTHING.name;
 
-  constructor ({eventsContainer, model}) {
+  constructor ({eventsContainer, eventsModel}) {
     this.#eventsContainerElement = eventsContainer;
-    this.#model = model;
+    this.#model = eventsModel;
   }
 
   #renderEmptyList() {
