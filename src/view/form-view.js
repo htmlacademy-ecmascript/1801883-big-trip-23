@@ -1,6 +1,7 @@
 import AbstractView from '../framework/view/abstract-view';
 import { EVENT_TYPES } from '../consts.js';
-import { capitalizeFirstLetter, reformatDate } from '../utils.js';
+import { reformatDate } from '../utils/event.js';
+import { capitalizeFirstLetter } from '../utils/common.js';
 
 const EMPTY_EVENT = {
   basePrice: 0,

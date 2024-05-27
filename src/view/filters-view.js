@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view';
 import { Filters } from '../consts.js';
-import { capitalizeFirstLetter } from '../utils.js';
+import { capitalizeFirstLetter } from '../utils/common.js';
 
 
 const createFilterItem = (type, isChecked, isDisabled) => `

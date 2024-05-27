@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view';
-import { capitalizeFirstLetter, reformatDate, calculateDuration } from '../utils.js';
-
+import { reformatDate, calculateDuration } from '../utils/event.js';
+import { capitalizeFirstLetter } from '../utils/common.js';
 
 const createSelectedOffers = (allowedOffers, selectedOffers) =>
   allowedOffers.map((offer) =>

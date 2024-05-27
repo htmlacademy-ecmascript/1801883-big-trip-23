@@ -1,4 +1,4 @@
-import { isFutureEvent, isPastEvent, isPresentEvent } from './utils';
+import { isFutureEvent, isPastEvent, isPresentEvent } from './utils/filters.js';
 
 
 const EVENT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
