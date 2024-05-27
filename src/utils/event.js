@@ -3,8 +3,6 @@ import duration from 'dayjs/plugin/duration';
 dayjs.extend(duration);
 
 
-const capitalizeFirstLetter = (inputString) => inputString[0].toUpperCase() + inputString.slice(1);
-
 const reformatDate = (data) => (
   {
     monthDay: dayjs(data).format('MMM D').toUpperCase(),
@@ -30,4 +28,5 @@ const calculateDuration = (startDate, endDate) => {
   return durationValue.format('mm[M]');
 };
 
-export { capitalizeFirstLetter, reformatDate, calculateDuration };
+
+export { reformatDate, calculateDuration };

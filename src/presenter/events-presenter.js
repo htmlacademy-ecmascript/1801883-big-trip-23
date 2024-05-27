@@ -1,4 +1,7 @@
 import { render, replace } from '../framework/render.js';
+import { Filters } from '../consts.js';
+import SortPanelView from '../view/sort-panel-view.js';
+import EmptyListView from '../view/empty-list-view';
 import EventsListView from '../view/events-list-view.js';
 import EventItemView from '../view/event-item-view.js';
 import FormView from '../view/form-view.js';
@@ -7,35 +10,50 @@ import FormView from '../view/form-view.js';
 export default class EventsPresenter {
   #eventsContainerElement = null;
   #model = null;
+  #emptyListView = null;
+  #sortPanelView = new SortPanelView();
   #eventsListView = new EventsListView();
 
   #destinations = [];
   #offers = [];
   #events = [];
+  #currentFilter = Filters.EVERYTHING.name;
 
-  constructor ({eventsContainer, model}) {
+  constructor ({eventsContainer, eventsModel}) {
     this.#eventsContainerElement = eventsContainer;
-    this.#model = model;
+    this.#model = eventsModel;
   }
 
+  #renderEmptyList() {
+    this.#emptyListView = new EmptyListView({currentFilter: this.#currentFilter});
+    render(this.#emptyListView, this.#eventsContainerElement);
+  }
+
+  #renderSortPanel() {
+    render(this.#sortPanelView, this.#eventsContainerElement);
+  }
 
   #renderEvent(event, offers, destinations) {
     let isEditMode = false;
 
-    const eventItemView = new EventItemView({
-      event,
-      offers,
-      destinations,
-      onRollupButtonClick: () => switchEventAndForm()
-    });
+    const eventItemView = new EventItemView(
+      {
+        event,
+        offers,
+        destinations,
+        onRollupButtonClick: switchEventAndForm
+      }
+    );
 
-    const formEditView = new FormView({
-      event,
-      offers,
-      destinations,
-      onFormSubmit: () => switchEventAndForm(),
-      onCancelClick: () => switchEventAndForm(),
-    });
+    const formEditView = new FormView(
+      {
+        event,
+        offers,
+        destinations,
+        onFormSubmit: switchEventAndForm,
+        onCancelClick: switchEventAndForm
+      }
+    );
 
 
     const onEscKeydown = (evt) => {
@@ -70,11 +88,17 @@ export default class EventsPresenter {
     this.#events.forEach((item) => this.#renderEvent(item, this.#offers, this.#destinations));
   }
 
-  init () {
+  init() {
     this.#destinations = [...this.#model.destinations];
     this.#offers = [...this.#model.offers];
     this.#events = [...this.#model.events];
 
+    if (this.#events.length === 0) {
+      this.#renderEmptyList();
+      return;
+    }
+
+    this.#renderSortPanel();
     this.#renderEventsList();
   }
 }
