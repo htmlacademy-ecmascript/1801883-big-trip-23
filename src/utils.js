@@ -1,6 +1,10 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
+import IsSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 dayjs.extend(duration);
+dayjs.extend(IsSameOrAfter);
+dayjs.extend(isSameOrBefore);
 
 
 const capitalizeFirstLetter = (inputString) => inputString[0].toUpperCase() + inputString.slice(1);
@@ -30,4 +34,14 @@ const calculateDuration = (startDate, endDate) => {
   return durationValue.format('mm[M]');
 };
 
-export { capitalizeFirstLetter, reformatDate, calculateDuration };
+
+const isFutureEvent = (startDate) => dayjs(startDate).isAfter(dayjs(), 'date');
+
+const isPastEvent = (endDate) => dayjs(endDate).isBefore(dayjs(), 'date');
+
+const isPresentEvent = (startDate, endDate) =>
+  dayjs(startDate).isSameOrBefore(dayjs(), 'date') &&
+  dayjs(endDate).isSameOrAfter(dayjs(), 'date');
+
+
+export { capitalizeFirstLetter, reformatDate, isFutureEvent, isPastEvent, isPresentEvent, calculateDuration };

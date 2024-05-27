@@ -1,4 +1,5 @@
 import { RenderPosition, render } from '../framework/render.js';
+import { Filters } from '../consts.js';
 import TripInfoView from '../view/trip-info-view.js';
 import FiltersView from '../view/filters-view.js';
 
@@ -11,6 +12,8 @@ export default class HeaderPresenter {
   #filtersView = null;
 
   #events = [];
+  #filteredEvents = new Object();
+  #currentFilter = 'everything';
 
   constructor ({tripInfoContainer, filtersContainer, model}) {
     this.#tripInfoContainerElement = tripInfoContainer;
@@ -24,7 +27,18 @@ export default class HeaderPresenter {
   }
 
   #renderFilters() {
-    this.#filtersView = new FiltersView();
+    // Q? Делать фильтрацию тут? Или лучше в модели? Или может ещё где то?
+    Object.values(Filters).forEach((filter) => {
+      this.#filteredEvents[filter.name] = filter.filterMethod(this.#events);
+    });
+
+    this.#filtersView = new FiltersView(
+      {
+        currentFilter: this.#currentFilter,
+        filteredEvents: this.#filteredEvents
+      }
+    );
+
     render(this.#filtersView, this.#filtersContainerElement);
   }
 

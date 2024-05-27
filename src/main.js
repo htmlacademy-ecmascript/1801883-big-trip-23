@@ -5,16 +5,20 @@ import EventsPresenter from './presenter/events-presenter.js';
 
 const eventsModel = new EventsModel;
 
-const headerPresenter = new HeaderPresenter({
-  tripInfoContainer: document.querySelector('.trip-main'),
-  filtersContainer: document.querySelector('.trip-controls__filters'),
-  model: eventsModel,
-});
+const headerPresenter = new HeaderPresenter(
+  {
+    tripInfoContainer: document.querySelector('.trip-main'),
+    filtersContainer: document.querySelector('.trip-controls__filters'),
+    model: eventsModel,
+  }
+);
 
-const eventsPresenter = new EventsPresenter({
-  eventsContainer: document.querySelector('.trip-events'),
-  model: eventsModel,
-});
+const eventsPresenter = new EventsPresenter(
+  {
+    eventsContainer: document.querySelector('.trip-events'),
+    model: eventsModel,
+  }
+);
 
 headerPresenter.init();
 eventsPresenter.init();

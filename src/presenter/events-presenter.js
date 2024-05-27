@@ -35,20 +35,24 @@ export default class EventsPresenter {
   #renderEvent(event, offers, destinations) {
     let isEditMode = false;
 
-    const eventItemView = new EventItemView({
-      event,
-      offers,
-      destinations,
-      onRollupButtonClick: switchEventAndForm
-    });
+    const eventItemView = new EventItemView(
+      {
+        event,
+        offers,
+        destinations,
+        onRollupButtonClick: switchEventAndForm
+      }
+    );
 
-    const formEditView = new FormView({
-      event,
-      offers,
-      destinations,
-      onFormSubmit: switchEventAndForm,
-      onCancelClick: switchEventAndForm
-    });
+    const formEditView = new FormView(
+      {
+        event,
+        offers,
+        destinations,
+        onFormSubmit: switchEventAndForm,
+        onCancelClick: switchEventAndForm
+      }
+    );
 
 
     const onEscKeydown = (evt) => {
