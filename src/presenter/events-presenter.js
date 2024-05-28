@@ -1,10 +1,9 @@
-import { render, replace } from '../framework/render.js';
+import { RenderPosition, render } from '../framework/render.js';
 import { Filters } from '../consts.js';
+import EventsListView from '../view/events-list-view.js';
 import SortPanelView from '../view/sort-panel-view.js';
 import EmptyListView from '../view/empty-list-view';
-import EventsListView from '../view/events-list-view.js';
-import EventItemView from '../view/event-item-view.js';
-import FormView from '../view/form-view.js';
+import EventPresenter from './event-presenter.js';
 
 
 export default class EventsPresenter {
@@ -30,62 +29,17 @@ export default class EventsPresenter {
   }
 
   #renderSortPanel() {
-    render(this.#sortPanelView, this.#eventsContainerElement);
+    render(this.#sortPanelView, this.#eventsContainerElement, RenderPosition.AFTERBEGIN);
   }
 
-  #renderEvent(event, offers, destinations) {
-    let isEditMode = false;
-
-    const eventItemView = new EventItemView(
-      {
-        event,
-        offers,
-        destinations,
-        onRollupButtonClick: switchEventAndForm
-      }
-    );
-
-    const formEditView = new FormView(
-      {
-        event,
-        offers,
-        destinations,
-        onFormSubmit: switchEventAndForm,
-        onCancelClick: switchEventAndForm
-      }
-    );
-
-
-    const onEscKeydown = (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        switchEventAndForm();
-      }
-    };
-
-    function switchEventAndForm () {
-      let newComponent;
-      let oldComponent;
-
-      if (isEditMode) {
-        newComponent = eventItemView;
-        oldComponent = formEditView;
-        document.removeEventListener('keydown', onEscKeydown);
-      } else {
-        newComponent = formEditView;
-        oldComponent = eventItemView;
-        document.addEventListener('keydown', onEscKeydown);
-      }
-      isEditMode = !isEditMode;
-      replace(newComponent, oldComponent);
-    }
-
-    render(eventItemView, this.#eventsListView.element);
+  #renderEvent(event) {
+    const taskPresenter = new EventPresenter({eventsListContainer: this.#eventsListView.element});
+    taskPresenter.init(event, this.#offers, this.#destinations);
   }
 
   #renderEventsList() {
     render(this.#eventsListView, this.#eventsContainerElement);
-    this.#events.forEach((item) => this.#renderEvent(item, this.#offers, this.#destinations));
+    this.#events.forEach((item) => this.#renderEvent(item));
   }
 
   init() {
