@@ -1,4 +1,4 @@
-import { render, replace } from '../framework/render.js';
+import { render, replace, remove } from '../framework/render.js';
 import EventItemView from '../view/event-item-view.js';
 import FormView from '../view/form-view.js';
 
@@ -18,12 +18,16 @@ export default class EventPresenter {
   }
 
   #renderEvent() {
+    const prevEventItemView = this.#eventItemView;
+    const prevFormEditView = this.#formEditView;
+
     this.#eventItemView = new EventItemView(
       {
         event: this.#event,
         offers: this.#offers,
         destinations: this.#destinations,
-        onRollupButtonClick: this.#switchEventAndForm
+        onRollupButtonClick: this.#switchEventAndForm,
+        onFavoriteButtonClick: this.#switchEventAndForm
       }
     );
 
@@ -37,7 +41,22 @@ export default class EventPresenter {
       }
     );
 
-    render(this.#eventItemView, this.#eventsListContainerElement);
+
+    if (prevEventItemView === null && prevFormEditView === null) {
+      render(this.#eventItemView, this.#eventsListContainerElement);
+      return;
+    }
+
+    if (this.#eventsListContainerElement.contains(prevEventItemView.element)) {
+      replace(this.#eventItemView, prevEventItemView);
+    }
+
+    if (this.#eventsListContainerElement.contains(prevFormEditView.element)) {
+      replace(this.#formEditView, prevFormEditView);
+    }
+
+    remove(prevEventItemView);
+    remove(prevFormEditView);
   }
 
   #onEscKeydown = (evt) => {
@@ -64,11 +83,17 @@ export default class EventPresenter {
     replace(newComponent, oldComponent);
   };
 
+
   init(event, offers, destinations) {
     this.#event = event;
-    this.#offers = offers;
-    this.#destinations = destinations;
+    this.#offers = offers ?? this.#offers;
+    this.#destinations = destinations ?? this.#destinations;
 
     this.#renderEvent();
+  }
+
+  destroy() {
+    remove(this.#eventItemView);
+    remove(this.#formEditView);
   }
 }
