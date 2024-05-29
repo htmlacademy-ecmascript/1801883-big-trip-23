@@ -12,6 +12,7 @@ export default class EventsPresenter {
   #emptyListView = null;
   #sortPanelView = new SortPanelView();
   #eventsListView = new EventsListView();
+  #eventPresenters = new Map();
 
   #destinations = [];
   #offers = [];
@@ -34,6 +35,8 @@ export default class EventsPresenter {
 
   #renderEvent(event) {
     const taskPresenter = new EventPresenter({eventsListContainer: this.#eventsListView.element});
+    this.#eventPresenters.set(event.id, taskPresenter);
+
     taskPresenter.init(event, this.#offers, this.#destinations);
   }
 
@@ -54,5 +57,31 @@ export default class EventsPresenter {
 
     this.#renderSortPanel();
     this.#renderEventsList();
+
+    //_________________________________________________________
+    //_________________________________________________________
+    //_________________________________________________________
+    // !Для проверки. Удалить
+    const onButtonClick = () => {
+      // const tempEvent = {
+      //   id: 'gghh-1',
+      //   basePrice: 111,
+      //   dateFrom: new Date(),
+      //   dateTo: new Date(),
+      //   destination: 'destenation-2',
+      //   isFavorite: false,
+      //   offers: [],
+      //   type: 'flight'
+      // };
+
+      this.#eventPresenters.get(this.#events[1].id).init(this.#events[0]);
+    };
+
+
+    const button = document.querySelector('.trip-main__event-add-btn');
+    button.addEventListener('click', onButtonClick);
+    //_________________________________________________________
+    //_________________________________________________________
+    //_________________________________________________________
   }
 }
