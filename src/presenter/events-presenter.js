@@ -1,5 +1,6 @@
 import { RenderPosition, render } from '../framework/render.js';
 import { Filters } from '../consts.js';
+import { updateItem } from '../utils/common.js';
 import EventsListView from '../view/events-list-view.js';
 import SortPanelView from '../view/sort-panel-view.js';
 import EmptyListView from '../view/empty-list-view';
@@ -34,15 +35,30 @@ export default class EventsPresenter {
   }
 
   #renderEvent(event) {
-    const taskPresenter = new EventPresenter({eventsListContainer: this.#eventsListView.element});
+    const taskPresenter = new EventPresenter(
+      {
+        eventsListContainer: this.#eventsListView.element,
+        onEventChange: this.#updateEvent
+      }
+    );
     this.#eventPresenters.set(event.id, taskPresenter);
 
     taskPresenter.init(event, this.#offers, this.#destinations);
   }
 
+  #updateEvent = (updatedEvent) => {
+    this.#events = updateItem(this.#events, updatedEvent);
+    this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
+  };
+
   #renderEventsList() {
     render(this.#eventsListView, this.#eventsContainerElement);
     this.#events.forEach((item) => this.#renderEvent(item));
+  }
+
+  #clearEventsList() {
+    this.#eventPresenters.forEach((presenter) => presenter.destroy());
+    this.#eventPresenters.clear();
   }
 
   init() {
@@ -57,31 +73,5 @@ export default class EventsPresenter {
 
     this.#renderSortPanel();
     this.#renderEventsList();
-
-    //_________________________________________________________
-    //_________________________________________________________
-    //_________________________________________________________
-    // !Для проверки. Удалить
-    const onButtonClick = () => {
-      // const tempEvent = {
-      //   id: 'gghh-1',
-      //   basePrice: 111,
-      //   dateFrom: new Date(),
-      //   dateTo: new Date(),
-      //   destination: 'destenation-2',
-      //   isFavorite: false,
-      //   offers: [],
-      //   type: 'flight'
-      // };
-
-      this.#eventPresenters.get(this.#events[1].id).init(this.#events[0]);
-    };
-
-
-    const button = document.querySelector('.trip-main__event-add-btn');
-    button.addEventListener('click', onButtonClick);
-    //_________________________________________________________
-    //_________________________________________________________
-    //_________________________________________________________
   }
 }

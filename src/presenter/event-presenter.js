@@ -5,6 +5,7 @@ import FormView from '../view/form-view.js';
 
 export default class EventPresenter {
   #eventsListContainerElement = null;
+  #onEventChangeCallback = null;
   #eventItemView = null;
   #formEditView = null;
 
@@ -13,8 +14,9 @@ export default class EventPresenter {
   #offers = [];
   #isEditMode = false;
 
-  constructor ({eventsListContainer}) {
+  constructor ({eventsListContainer, onEventChange}) {
     this.#eventsListContainerElement = eventsListContainer;
+    this.#onEventChangeCallback = onEventChange;
   }
 
   #renderEvent() {
@@ -27,7 +29,7 @@ export default class EventPresenter {
         offers: this.#offers,
         destinations: this.#destinations,
         onRollupButtonClick: this.#switchEventAndForm,
-        onFavoriteButtonClick: this.#switchEventAndForm
+        onFavoriteButtonClick: this.#onFavoriteButtonClick
       }
     );
 
@@ -36,7 +38,7 @@ export default class EventPresenter {
         event: this.#event,
         offers: this.#offers,
         destinations: this.#destinations,
-        onFormSubmit: this.#switchEventAndForm,
+        onFormSubmit: this.#onFormSubmit,
         onCancelClick: this.#switchEventAndForm
       }
     );
@@ -59,13 +61,6 @@ export default class EventPresenter {
     remove(prevFormEditView);
   }
 
-  #onEscKeydown = (evt) => {
-    if (evt.key === 'Escape') {
-      evt.preventDefault();
-      this.#switchEventAndForm();
-    }
-  };
-
   #switchEventAndForm = () => {
     let newComponent;
     let oldComponent;
@@ -81,6 +76,22 @@ export default class EventPresenter {
     }
     this.#isEditMode = !this.#isEditMode;
     replace(newComponent, oldComponent);
+  };
+
+  #onEscKeydown = (evt) => {
+    if (evt.key === 'Escape') {
+      evt.preventDefault();
+      this.#switchEventAndForm();
+    }
+  };
+
+  #onFavoriteButtonClick = (updatedEvent) => {
+    this.#onEventChangeCallback(updatedEvent);
+  };
+
+  #onFormSubmit = (updatedEvent) => {
+    this.#onEventChangeCallback(updatedEvent);
+    this.#switchEventAndForm();
   };
 
 

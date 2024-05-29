@@ -10,7 +10,7 @@ const EMPTY_EVENT = {
   destination: null,
   isFavorite: false,
   offers: [],
-  type: null
+  type: 'flight'
 };
 
 
@@ -177,7 +177,7 @@ export default class FormView extends AbstractView {
 
   #onFormSubmit = (evt) => {
     evt.preventDefault();
-    this.#onFormSubmitCallback();
+    this.#onFormSubmitCallback({...this.#event});
   };
 
   #onCancelClick = (evt) => {

@@ -95,6 +95,6 @@ export default class EventItemView extends AbstractView {
 
   #onFavoriteButtonClick = (evt) => {
     evt.preventDefault();
-    this.#onFavoriteButtonClickCallback();
+    this.#onFavoriteButtonClickCallback({...this.#event, isFavorite: !this.#event.isFavorite});
   };
 }
