@@ -5,6 +5,7 @@ import FormView from '../view/form-view.js';
 
 export default class EventPresenter {
   #eventsListContainerElement = null;
+  #closeAllFormsCallback = null;
   #onEventChangeCallback = null;
   #eventItemView = null;
   #formEditView = null;
@@ -14,8 +15,9 @@ export default class EventPresenter {
   #offers = [];
   #isEditMode = false;
 
-  constructor ({eventsListContainer, onEventChange}) {
+  constructor ({eventsListContainer, onEventChange, closeAllForms}) {
     this.#eventsListContainerElement = eventsListContainer;
+    this.#closeAllFormsCallback = closeAllForms;
     this.#onEventChangeCallback = onEventChange;
   }
 
@@ -49,11 +51,11 @@ export default class EventPresenter {
       return;
     }
 
-    if (this.#eventsListContainerElement.contains(prevEventItemView.element)) {
+    if (!this.#isEditMode) {
       replace(this.#eventItemView, prevEventItemView);
     }
 
-    if (this.#eventsListContainerElement.contains(prevFormEditView.element)) {
+    if (this.#isEditMode) {
       replace(this.#formEditView, prevFormEditView);
     }
 
@@ -72,6 +74,7 @@ export default class EventPresenter {
     } else {
       newComponent = this.#formEditView;
       oldComponent = this.#eventItemView;
+      this.#closeAllFormsCallback();
       document.addEventListener('keydown', this.#onEscKeydown);
     }
     this.#isEditMode = !this.#isEditMode;
@@ -103,8 +106,15 @@ export default class EventPresenter {
     this.#renderEvent();
   }
 
+  closeForm () {
+    if (this.#isEditMode) {
+      this.#switchEventAndForm();
+    }
+  }
+
   destroy() {
     remove(this.#eventItemView);
     remove(this.#formEditView);
+    document.removeEventListener('keydown', this.#onEscKeydown);
   }
 }

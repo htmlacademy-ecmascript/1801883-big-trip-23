@@ -38,6 +38,7 @@ export default class EventsPresenter {
     const taskPresenter = new EventPresenter(
       {
         eventsListContainer: this.#eventsListView.element,
+        closeAllForms: this.#closeAllForms,
         onEventChange: this.#updateEvent
       }
     );
@@ -45,11 +46,6 @@ export default class EventsPresenter {
 
     taskPresenter.init(event, this.#offers, this.#destinations);
   }
-
-  #updateEvent = (updatedEvent) => {
-    this.#events = updateItem(this.#events, updatedEvent);
-    this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
-  };
 
   #renderEventsList() {
     render(this.#eventsListView, this.#eventsContainerElement);
@@ -60,6 +56,16 @@ export default class EventsPresenter {
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPresenters.clear();
   }
+
+  #updateEvent = (updatedEvent) => {
+    this.#events = updateItem(this.#events, updatedEvent);
+    this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
+  };
+
+  #closeAllForms = () => {
+    this.#eventPresenters.forEach((presenter) => presenter.closeForm());
+  };
+
 
   init() {
     this.#destinations = [...this.#model.destinations];
