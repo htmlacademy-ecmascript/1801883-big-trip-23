@@ -1,5 +1,5 @@
 import { RenderPosition, render } from '../framework/render.js';
-import { Filters } from '../consts.js';
+import { Filters, SortTypes } from '../consts.js';
 import { updateItem } from '../utils/common.js';
 import EventsListView from '../view/events-list-view.js';
 import SortPanelView from '../view/sort-panel-view.js';
@@ -11,7 +11,7 @@ export default class TripPresenter {
   #eventsContainerElement = null;
   #model = null;
   #emptyListView = null;
-  #sortPanelView = new SortPanelView();
+  #sortPanelView = null;
   #eventsListView = new EventsListView();
   #eventPresenters = new Map();
 
@@ -19,6 +19,7 @@ export default class TripPresenter {
   #offers = [];
   #events = [];
   #currentFilter = Filters.EVERYTHING.name;
+  #currentSortType = SortTypes.DAY.name;
 
   constructor ({eventsContainer, eventsModel}) {
     this.#eventsContainerElement = eventsContainer;
@@ -31,6 +32,12 @@ export default class TripPresenter {
   }
 
   #renderSortPanel() {
+    this.#sortPanelView = new SortPanelView(
+      {
+        currentSortType: this.#currentSortType,
+        onSortTypeChange: this.#closeAllForms
+      }
+    );
     render(this.#sortPanelView, this.#eventsContainerElement, RenderPosition.AFTERBEGIN);
   }
 

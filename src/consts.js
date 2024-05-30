@@ -26,5 +26,27 @@ const Filters = {
   }
 };
 
+const SortTypes = {
+  DAY: {
+    name: 'day',
+    default: ''
+  },
+  EVENT: {
+    name: 'event',
+    default: 'disabled'
+  },
+  TIME: {
+    name: 'time',
+    default: ''
+  },
+  PRICE: {
+    name: 'price',
+    default: ''
+  },
+  OFFER: {
+    name: 'offer',
+    default: 'disabled'
+  },
+};
 
-export { EVENT_TYPES, Filters };
+export { EVENT_TYPES, Filters, SortTypes };
