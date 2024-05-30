@@ -35,7 +35,7 @@ export default class TripPresenter {
     this.#sortPanelView = new SortPanelView(
       {
         currentSortType: this.#currentSortType,
-        onSortTypeChange: this.#closeAllForms
+        onSortTypeChange: this.#sortTypeChange
       }
     );
     render(this.#sortPanelView, this.#eventsContainerElement, RenderPosition.AFTERBEGIN);
@@ -59,10 +59,19 @@ export default class TripPresenter {
     this.#events.forEach((item) => this.#renderEvent(item));
   }
 
-  #clearEventsList() {
+  #clearEventsList = () => {
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPresenters.clear();
-  }
+  };
+
+  #sortTypeChange = (currentSortType) => {
+    this.#currentSortType = currentSortType;
+
+    this.#events.sort(SortTypes[currentSortType.toUpperCase()].sortMethod);
+    // console.log(this.#events);
+    this.#clearEventsList(); // проеврить, есть уже презентеры или нет.
+    this.#renderEventsList();
+  };
 
   #updateEvent = (updatedEvent) => {
     this.#events = updateItem(this.#events, updatedEvent);
@@ -78,6 +87,7 @@ export default class TripPresenter {
     this.#destinations = [...this.#model.destinations];
     this.#offers = [...this.#model.offers];
     this.#events = [...this.#model.events];
+    // console.log(this.#events);
 
     if (this.#events.length === 0) {
       this.#renderEmptyList();
@@ -85,6 +95,6 @@ export default class TripPresenter {
     }
 
     this.#renderSortPanel();
-    this.#renderEventsList();
+    this.#renderEventsList(); // заменить на sortTypeChange
   }
 }

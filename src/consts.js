@@ -1,4 +1,5 @@
 import { isFutureEvent, isPastEvent, isPresentEvent } from './utils/filters.js';
+import { sortByDay, sortByPrice, sortByDuration } from './utils/sort-types.js';
 
 
 const EVENT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
@@ -29,23 +30,28 @@ const Filters = {
 const SortTypes = {
   DAY: {
     name: 'day',
-    default: ''
+    default: '',
+    sortMethod: sortByDay
   },
   EVENT: {
     name: 'event',
-    default: 'disabled'
+    default: 'disabled',
+    sortMethod: () => 0
   },
   TIME: {
     name: 'time',
-    default: ''
+    default: '',
+    sortMethod: sortByDuration
   },
   PRICE: {
     name: 'price',
-    default: ''
+    default: '',
+    sortMethod: sortByPrice
   },
   OFFER: {
     name: 'offer',
-    default: 'disabled'
+    default: 'disabled',
+    sortMethod: () => 0
   },
 };
 
