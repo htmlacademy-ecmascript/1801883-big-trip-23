@@ -7,7 +7,7 @@ import EmptyListView from '../view/empty-list-view';
 import EventPresenter from './event-presenter.js';
 
 
-export default class EventsPresenter {
+export default class TripPresenter {
   #eventsContainerElement = null;
   #model = null;
   #emptyListView = null;
