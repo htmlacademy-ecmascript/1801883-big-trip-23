@@ -2,17 +2,17 @@ import AbstractView from '../framework/view/abstract-view';
 import { SortTypes } from '../consts.js';
 import { capitalizeFirstLetter } from '../utils/common.js';
 
-const createSortItem = (type, isChecked) => `
-  <div class="trip-sort__item  trip-sort__item--${type.name}">
+const createSortItem = ({name, isDisabled}, isChecked) => `
+  <div class="trip-sort__item  trip-sort__item--${name}">
     <input
-      id="sort-${type.name}"
+      id="sort-${name}"
       class="trip-sort__input  visually-hidden"
       type="radio" name="trip-sort"
-      value="sort-${type.name}"
+      value="sort-${name}"
       ${isChecked ? 'checked' : ''}
-      ${type.default}
+      ${isDisabled ? 'disabled' : ''}
     >
-    <label class="trip-sort__btn" for="sort-${type.name}">${type.name === 'offer' ? 'Offers' : capitalizeFirstLetter(type.name)}</label>
+    <label class="trip-sort__btn" for="sort-${name}">${name === 'offer' ? 'Offers' : capitalizeFirstLetter(name)}</label>
   </div>
 `;
 
@@ -30,14 +30,14 @@ export default class SortPanelView extends AbstractView {
     super();
     this.#currentSortType = currentSortType;
     this.#onSortTypeChangeCallback = onSortTypeChange;
-    this.element.addEventListener('change', this.#onSortTypeClick);
+    this.element.addEventListener('change', this.#onSortTypeChange);
   }
 
   get template() {
     return createSortPanelTemplate(Object.values(SortTypes), this.#currentSortType);
   }
 
-  #onSortTypeClick = (evt) => {
+  #onSortTypeChange = (evt) => {
     evt.preventDefault();
     if (evt.target.tagName === 'INPUT') {
       this.#onSortTypeChangeCallback(evt.target.value.replace('sort-', ''));

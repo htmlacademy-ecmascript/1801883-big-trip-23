@@ -1,4 +1,4 @@
-import { RenderPosition, render } from '../framework/render.js';
+import { RenderPosition, render, remove } from '../framework/render.js';
 import { Filters, SortTypes } from '../consts.js';
 import { updateItem } from '../utils/common.js';
 import EventsListView from '../view/events-list-view.js';
@@ -35,23 +35,23 @@ export default class TripPresenter {
     this.#sortPanelView = new SortPanelView(
       {
         currentSortType: this.#currentSortType,
-        onSortTypeChange: this.#sortTypeChange
+        onSortTypeChange: this.#sortEvents
       }
     );
     render(this.#sortPanelView, this.#eventsContainerElement, RenderPosition.AFTERBEGIN);
   }
 
   #renderEvent(event) {
-    const taskPresenter = new EventPresenter(
+    const eventPresenter = new EventPresenter(
       {
         eventsListContainer: this.#eventsListView.element,
         closeAllForms: this.#closeAllForms,
         onEventChange: this.#updateEvent
       }
     );
-    this.#eventPresenters.set(event.id, taskPresenter);
+    this.#eventPresenters.set(event.id, eventPresenter);
 
-    taskPresenter.init(event, this.#offers, this.#destinations);
+    eventPresenter.init(event, this.#offers, this.#destinations);
   }
 
   #renderEventsList() {
@@ -62,14 +62,16 @@ export default class TripPresenter {
   #clearEventsList = () => {
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPresenters.clear();
+    remove(this.#eventsListView);
   };
 
-  #sortTypeChange = (currentSortType) => {
+  #sortEvents = (currentSortType) => {
     this.#currentSortType = currentSortType;
-
     this.#events.sort(SortTypes[currentSortType.toUpperCase()].sortMethod);
-    // console.log(this.#events);
-    this.#clearEventsList(); // проеврить, есть уже презентеры или нет.
+
+    if (this.#eventPresenters.size > 0) {
+      this.#clearEventsList();
+    }
     this.#renderEventsList();
   };
 
@@ -87,7 +89,6 @@ export default class TripPresenter {
     this.#destinations = [...this.#model.destinations];
     this.#offers = [...this.#model.offers];
     this.#events = [...this.#model.events];
-    // console.log(this.#events);
 
     if (this.#events.length === 0) {
       this.#renderEmptyList();
@@ -95,6 +96,6 @@ export default class TripPresenter {
     }
 
     this.#renderSortPanel();
-    this.#renderEventsList(); // заменить на sortTypeChange
+    this.#sortEvents(this.#currentSortType);
   }
 }

@@ -45,18 +45,15 @@ export default class EventPresenter {
       }
     );
 
-
     if (prevEventItemView === null && prevFormEditView === null) {
       render(this.#eventItemView, this.#eventsListContainerElement);
       return;
     }
 
-    if (!this.#isEditMode) {
-      replace(this.#eventItemView, prevEventItemView);
-    }
-
     if (this.#isEditMode) {
       replace(this.#formEditView, prevFormEditView);
+    } else {
+      replace(this.#eventItemView, prevEventItemView);
     }
 
     remove(prevEventItemView);
@@ -98,10 +95,10 @@ export default class EventPresenter {
   };
 
 
-  init(event, offers, destinations) {
+  init(event, offers = this.#offers, destinations = this.#destinations) {
     this.#event = event;
-    this.#offers = offers ?? this.#offers;
-    this.#destinations = destinations ?? this.#destinations;
+    this.#offers = offers;
+    this.#destinations = destinations;
 
     this.#renderEvent();
   }

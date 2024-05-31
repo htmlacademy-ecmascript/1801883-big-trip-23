@@ -30,27 +30,27 @@ const Filters = {
 const SortTypes = {
   DAY: {
     name: 'day',
-    default: '',
+    isDisabled: false,
     sortMethod: sortByDay
   },
   EVENT: {
     name: 'event',
-    default: 'disabled',
+    isDisabled: true,
     sortMethod: () => 0
   },
   TIME: {
     name: 'time',
-    default: '',
+    isDisabled: false,
     sortMethod: sortByDuration
   },
   PRICE: {
     name: 'price',
-    default: '',
+    isDisabled: false,
     sortMethod: sortByPrice
   },
   OFFER: {
     name: 'offer',
-    default: 'disabled',
+    isDisabled: true,
     sortMethod: () => 0
   },
 };
