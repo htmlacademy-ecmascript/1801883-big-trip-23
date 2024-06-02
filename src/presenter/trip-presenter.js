@@ -65,15 +65,24 @@ export default class TripPresenter {
     remove(this.#eventsListView);
   };
 
-  #sortEvents = (currentSortType) => {
+  #sortEvents = (currentSortType = this.#currentSortType) => {
     this.#currentSortType = currentSortType;
     this.#events.sort(SortTypes[currentSortType.toUpperCase()].sortMethod);
+
+    this.#rerenderEventsList();
+  };
+
+  #rerenderEventsList() {
+    if (this.#events.length === 0) {
+      this.#renderEmptyList();
+      return;
+    }
 
     if (this.#eventPresenters.size > 0) {
       this.#clearEventsList();
     }
     this.#renderEventsList();
-  };
+  }
 
   #updateEvent = (updatedEvent) => {
     this.#events = updateItem(this.#events, updatedEvent);
@@ -90,12 +99,7 @@ export default class TripPresenter {
     this.#offers = [...this.#model.offers];
     this.#events = [...this.#model.events];
 
-    if (this.#events.length === 0) {
-      this.#renderEmptyList();
-      return;
-    }
-
     this.#renderSortPanel();
-    this.#sortEvents(this.#currentSortType);
+    this.#sortEvents();
   }
 }
