@@ -4,4 +4,7 @@ function updateItem(items, newItem) {
   return items.map((item) => item.id === newItem.id ? newItem : item);
 }
 
-export { capitalizeFirstLetter, updateItem };
+const findObject = (items, property, value) => items.find((item) => item[property] === value);
+
+
+export { capitalizeFirstLetter, updateItem, findObject };

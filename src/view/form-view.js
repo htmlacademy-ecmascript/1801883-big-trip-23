@@ -1,7 +1,7 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { EVENT_TYPES } from '../consts.js';
 import { reformatDate } from '../utils/event.js';
-import { capitalizeFirstLetter } from '../utils/common.js';
+import { capitalizeFirstLetter, findObject } from '../utils/common.js';
 
 const EMPTY_EVENT = {
   basePrice: 0,
@@ -125,10 +125,13 @@ const createDestination = ({description, pictures}) => `
 `;
 
 
-const createFormTemplate = (event, allDestinations) => {
-  const {id, basePrice, dateFrom, dateTo, type, myDestination, myOffers, isOffersEnable, availableOffers} = event;
+const createFormTemplate = (event, allDestinations, allOffers) => {
+  const {id, basePrice, dateFrom, dateTo, destination, offers, type} = event;
   const startDate = reformatDate(dateFrom);
   const endDate = reformatDate(dateTo);
+  const myDestination = findObject(allDestinations, 'id', destination);
+  const availableOffers = type ? findObject(allOffers, 'type', type).offers : [];
+  const isOffersEnable = availableOffers.length > 0;
 
   return (
     `<li class="trip-events__item">
@@ -138,7 +141,7 @@ const createFormTemplate = (event, allDestinations) => {
         ${isOffersEnable || myDestination
       ? `
         <section class="event__details">
-          ${isOffersEnable ? createOffers(availableOffers, myOffers) : ''}
+          ${isOffersEnable ? createOffers(availableOffers, offers) : ''}
           ${myDestination && (myDestination.description || myDestination.pictures.length > 0) ? createDestination(myDestination) : ''}
         </section>`
       : ''}
@@ -155,24 +158,32 @@ export default class FormView extends AbstractStatefulView {
 
   constructor({event = EMPTY_EVENT, offers, destinations, onFormSubmit, onCancelClick}) {
     super();
+    this._state = {...event};
     this.#allOffers = offers;
     this.#allDestinations = destinations;
-    this._state = this.#parseEvent(event);
 
     this.#onFormSubmitCallback = onFormSubmit;
     this.#onCancelClickCallback = onCancelClick;
+    this._restoreHandlers();
+  }
+
+
+  _restoreHandlers() {
     this.element.querySelector('form.event--edit').addEventListener('submit', this.#onFormSubmit);
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCancelClick);
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onCancelClick);
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#onTypeChange);
+    this.element.querySelector('#event-destination-1').addEventListener('change', this.#onDestinationChange);
+    this.element.querySelector('#event-price-1').addEventListener('change', this.#onPriceChange);
   }
 
   get template() {
-    return createFormTemplate(this._state, this.#allDestinations);
+    return createFormTemplate(this._state, this.#allDestinations, this.#allOffers);
   }
 
   #onFormSubmit = (evt) => {
     evt.preventDefault();
-    this.#onFormSubmitCallback(this.#parseTask(this._state));
+    this.#onFormSubmitCallback({...this._state});
   };
 
   #onCancelClick = (evt) => {
@@ -180,28 +191,24 @@ export default class FormView extends AbstractStatefulView {
     this.#onCancelClickCallback();
   };
 
-  #parseEvent(event) {
-    const currentDestination = this.#allDestinations.find((destination) => (destination.id === event.destination));
-    const enabledOffers = event.type ? this.#allOffers.find((offers) => (offers.type === event.type)).offers : [];
+  #onTypeChange = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      type: evt.target.value,
+      offers: []
+    });
+  };
 
-    return {
-      ...event,
-      myDestination: currentDestination,
-      myOffers:  event.offers,
-      isOffersEnable : enabledOffers.length > 0,
-      availableOffers: enabledOffers
-    };
-  }
+  #onDestinationChange = (evt) => {
+    evt.preventDefault();
+    const selectedDestination = findObject(this.#allDestinations, 'name', evt.target.value);
 
-  #parseTask(task) {
-    const event = {...task};
-    event.offers = event.myOffers;
-    event.destination = event.myDestination.id;
+    this.updateElement({
+      destination: selectedDestination ? selectedDestination.id : null
+    });
+  };
 
-    delete event.myDestination;
-    delete event.myOffers;
-    delete event.isOffersEnable;
-    delete event.availableOffers;
-    return event;
-  }
+  #onPriceChange = (evt) => {
+    evt.preventDefault();
+  };
 }
