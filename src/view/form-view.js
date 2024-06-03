@@ -1,4 +1,4 @@
-import AbstractView from '../framework/view/abstract-view';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { EVENT_TYPES } from '../consts.js';
 import { reformatDate } from '../utils/event.js';
 import { capitalizeFirstLetter } from '../utils/common.js';
@@ -69,7 +69,7 @@ const createHeader = (id, basePrice, startDate, endDate, destination, allDestina
       </div>
 
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-      <button class="event__reset-btn" type="reset">${id ? 'Cancel' : 'Delete'}</button>
+      <button class="event__reset-btn" type="reset">${id ? 'Delete' : 'Cancel'}</button>
       <button class="event__rollup-btn" type="button">
         <span class="visually-hidden">Open event</span>
       </button>
@@ -94,31 +94,29 @@ const createOfferItem = ({id, title, price}, isChecked) => `
   </div>
 `;
 
-const createOffers = (typeOffers, selectedOffers) => `
+const createOffers = (availableOffers, selectedOffers) => `
   <section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
     <div class="event__available-offers">
-    ${typeOffers.map((offer) => createOfferItem(offer, selectedOffers.includes(offer.id))).join('')}
+    ${availableOffers.map((offer) => createOfferItem(offer, selectedOffers.includes(offer.id))).join('')}
     </div>
   </section>
 `;
 
 
-const createImageDestination = ({src, description}) => `
-  <img class="event__photo" src="${src}" alt="${description}"></img>
-`;
-
 const createDestination = ({description, pictures}) => `
   <section class="event__section  event__section--destination">
     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-    <p class="event__destination-description">${description}</p>
+    ${ description
+    ? `<p class="event__destination-description">${description}</p>`
+    : ''}
 
     ${ pictures.length > 0
     ? `
         <div class="event__photos-container">
           <div class="event__photos-tape">
-            ${pictures.map((image) => createImageDestination(image)).join('')}
+            ${pictures.map((image) => `<img class="event__photo" src="${image.src}" alt="${image.description}"></img>`).join('')}
           </div>
         </div>
         `
@@ -127,24 +125,21 @@ const createDestination = ({description, pictures}) => `
 `;
 
 
-const createFormTemplate = (event, allOffers, allDestinations) => {
-  const {id, basePrice, dateFrom, dateTo, destination, offers, type} = event;
-
+const createFormTemplate = (event, allDestinations) => {
+  const {id, basePrice, dateFrom, dateTo, type, myDestination, myOffers, isOffersEnable, availableOffers} = event;
   const startDate = reformatDate(dateFrom);
   const endDate = reformatDate(dateTo);
-  const currentDestination = allDestinations.find((item) => (item.id === destination));
-  const typeOffers = type ? allOffers.find((item) => (item.type === type)).offers : '';
-
 
   return (
     `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
-        ${createHeader(id, basePrice, startDate.dateHoursMinute, endDate.dateHoursMinute, currentDestination, allDestinations, type)}
-        ${typeOffers.length > 0 || currentDestination
+        ${createHeader(id, basePrice, startDate.dateHoursMinute, endDate.dateHoursMinute, myDestination, allDestinations, type)}
+
+        ${isOffersEnable || myDestination
       ? `
         <section class="event__details">
-          ${typeOffers.length > 0 ? createOffers(typeOffers, offers) : ''}
-          ${currentDestination ? createDestination(currentDestination) : ''}
+          ${isOffersEnable ? createOffers(availableOffers, myOffers) : ''}
+          ${myDestination && (myDestination.description || myDestination.pictures.length > 0) ? createDestination(myDestination) : ''}
         </section>`
       : ''}
       </form>
@@ -152,8 +147,7 @@ const createFormTemplate = (event, allOffers, allDestinations) => {
   );
 };
 
-export default class FormView extends AbstractView {
-  #event = null;
+export default class FormView extends AbstractStatefulView {
   #allOffers = null;
   #allDestinations = null;
   #onFormSubmitCallback = null;
@@ -161,9 +155,10 @@ export default class FormView extends AbstractView {
 
   constructor({event = EMPTY_EVENT, offers, destinations, onFormSubmit, onCancelClick}) {
     super();
-    this.#event = event;
     this.#allOffers = offers;
     this.#allDestinations = destinations;
+    this._state = this.#parseEvent(event);
+
     this.#onFormSubmitCallback = onFormSubmit;
     this.#onCancelClickCallback = onCancelClick;
     this.element.querySelector('form.event--edit').addEventListener('submit', this.#onFormSubmit);
@@ -172,16 +167,41 @@ export default class FormView extends AbstractView {
   }
 
   get template() {
-    return createFormTemplate(this.#event, this.#allOffers, this.#allDestinations);
+    return createFormTemplate(this._state, this.#allDestinations);
   }
 
   #onFormSubmit = (evt) => {
     evt.preventDefault();
-    this.#onFormSubmitCallback({...this.#event});
+    this.#onFormSubmitCallback(this.#parseTask(this._state));
   };
 
   #onCancelClick = (evt) => {
     evt.preventDefault();
     this.#onCancelClickCallback();
   };
+
+  #parseEvent(event) {
+    const currentDestination = this.#allDestinations.find((destination) => (destination.id === event.destination));
+    const enabledOffers = event.type ? this.#allOffers.find((offers) => (offers.type === event.type)).offers : [];
+
+    return {
+      ...event,
+      myDestination: currentDestination,
+      myOffers:  event.offers,
+      isOffersEnable : enabledOffers.length > 0,
+      availableOffers: enabledOffers
+    };
+  }
+
+  #parseTask(task) {
+    const event = {...task};
+    event.offers = event.myOffers;
+    event.destination = event.myDestination.id;
+
+    delete event.myDestination;
+    delete event.myOffers;
+    delete event.isOffersEnable;
+    delete event.availableOffers;
+    return event;
+  }
 }

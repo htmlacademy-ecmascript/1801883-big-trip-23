@@ -12,7 +12,7 @@ const CITY_DESCRIPTIONS = [
   'Sed sed nisi sed augue convallis suscipit in sed felis.',
   'Aliquam erat volutpat.',
   'Nunc fermentum tortor ac porta dapibus.',
-  'In rutrum ac purus sit amet tempus.',
+  'In rutrum ac purus sit amet tempus.'
 ];
 const MIN_DESCRIPTIONS_NUMBER = 1;
 const MAX_DESCRIPTIONS_NUMBER = 5;
