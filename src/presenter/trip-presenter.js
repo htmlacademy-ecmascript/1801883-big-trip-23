@@ -96,6 +96,7 @@ export default class TripPresenter {
   #updateEvent = (updatedEvent) => {
     this.#events = updateItem(this.#events, updatedEvent);
     this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
+    this.#sortEvents();
   };
 
   #closeAllForms = () => {

@@ -258,7 +258,7 @@ export default class FormView extends AbstractStatefulView {
     const selectedDestination = this.#allDestinations.find((destination) => destination.name === evt.target.value);
 
     this.updateElement({
-      destination: selectedDestination ? selectedDestination.id : null
+      destination: selectedDestination ? selectedDestination.id : this._state.destination
     });
   };
 
