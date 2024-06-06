@@ -26,6 +26,15 @@ export default class TripPresenter {
     this.#model = eventsModel;
   }
 
+  init() {
+    this.#destinations = [...this.#model.destinations];
+    this.#offers = [...this.#model.offers];
+    this.#events = [...this.#model.events];
+
+    this.#renderSortPanel();
+    this.#sortEvents();
+  }
+
   #renderEmptyList() {
     this.#emptyListView = new EmptyListView({currentFilter: this.#currentFilter});
     render(this.#emptyListView, this.#eventsContainerElement);
@@ -59,6 +68,18 @@ export default class TripPresenter {
     this.#events.forEach((item) => this.#renderEvent(item));
   }
 
+  #rerenderEventsList() {
+    if (this.#events.length === 0) {
+      this.#renderEmptyList();
+      return;
+    }
+
+    if (this.#eventPresenters.size > 0) {
+      this.#clearEventsList();
+    }
+    this.#renderEventsList();
+  }
+
   #clearEventsList = () => {
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPresenters.clear();
@@ -72,18 +93,6 @@ export default class TripPresenter {
     this.#rerenderEventsList();
   };
 
-  #rerenderEventsList() {
-    if (this.#events.length === 0) {
-      this.#renderEmptyList();
-      return;
-    }
-
-    if (this.#eventPresenters.size > 0) {
-      this.#clearEventsList();
-    }
-    this.#renderEventsList();
-  }
-
   #updateEvent = (updatedEvent) => {
     this.#events = updateItem(this.#events, updatedEvent);
     this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
@@ -92,14 +101,4 @@ export default class TripPresenter {
   #closeAllForms = () => {
     this.#eventPresenters.forEach((presenter) => presenter.closeForm());
   };
-
-
-  init() {
-    this.#destinations = [...this.#model.destinations];
-    this.#offers = [...this.#model.offers];
-    this.#events = [...this.#model.events];
-
-    this.#renderSortPanel();
-    this.#sortEvents();
-  }
 }

@@ -78,22 +78,6 @@ export default class EventPresenter {
     replace(newComponent, oldComponent);
   };
 
-  #onEscKeydown = (evt) => {
-    if (evt.key === 'Escape') {
-      evt.preventDefault();
-      this.#switchEventAndForm();
-    }
-  };
-
-  #onFavoriteButtonClick = (updatedEvent) => {
-    this.#onEventChangeCallback(updatedEvent);
-  };
-
-  #onFormSubmit = (updatedEvent) => {
-    this.#onEventChangeCallback(updatedEvent);
-    this.#switchEventAndForm();
-  };
-
 
   init(event, offers = this.#offers, destinations = this.#destinations) {
     this.#event = event;
@@ -114,4 +98,20 @@ export default class EventPresenter {
     remove(this.#formEditView);
     document.removeEventListener('keydown', this.#onEscKeydown);
   }
+
+  #onEscKeydown = (evt) => {
+    if (evt.key === 'Escape') {
+      evt.preventDefault();
+      this.#switchEventAndForm();
+    }
+  };
+
+  #onFavoriteButtonClick = (updatedEvent) => {
+    this.#onEventChangeCallback(updatedEvent);
+  };
+
+  #onFormSubmit = (updatedEvent) => {
+    this.#onEventChangeCallback(updatedEvent);
+    this.#switchEventAndForm();
+  };
 }

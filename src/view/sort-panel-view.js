@@ -2,6 +2,7 @@ import AbstractView from '../framework/view/abstract-view';
 import { SortTypes } from '../consts.js';
 import { capitalizeFirstLetter } from '../utils/common.js';
 
+
 const createSortItem = ({name, isDisabled}, isChecked) => `
   <div class="trip-sort__item  trip-sort__item--${name}">
     <input
