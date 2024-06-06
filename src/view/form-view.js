@@ -1,7 +1,15 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/themes/material_blue.css';
 import { EVENT_TYPES } from '../consts.js';
 import { reformatDate } from '../utils/event.js';
-import { capitalizeFirstLetter, findObject } from '../utils/common.js';
+import { capitalizeFirstLetter } from '../utils/common.js';
+
+const DEFAULT_SETTING_FLATPICKR = {
+  enableTime: true,
+  dateFormat: 'd/m/y H:i',
+  minuteIncrement: 1
+};
 
 const EMPTY_EVENT = {
   basePrice: 0,
@@ -129,8 +137,8 @@ const createFormTemplate = (event, allDestinations, allOffers) => {
   const {id, basePrice, dateFrom, dateTo, destination, offers, type} = event;
   const startDate = reformatDate(dateFrom);
   const endDate = reformatDate(dateTo);
-  const myDestination = findObject(allDestinations, 'id', destination);
-  const availableOffers = type ? findObject(allOffers, 'type', type).offers : [];
+  const myDestination = allDestinations.find((item) => item.id === destination);
+  const availableOffers = type ? allOffers.find((item) => item.type === type).offers : [];
   const isOffersEnable = availableOffers.length > 0;
 
   return (
@@ -155,6 +163,8 @@ export default class FormView extends AbstractStatefulView {
   #allDestinations = null;
   #onFormSubmitCallback = null;
   #onCancelClickCallback = null;
+  #dateFromFlatpickr = null;
+  #dateToFlatpickr = null;
 
   constructor({event = EMPTY_EVENT, offers, destinations, onFormSubmit, onCancelClick}) {
     super();
@@ -183,10 +193,46 @@ export default class FormView extends AbstractStatefulView {
     if (availableOffersElement) {
       availableOffersElement.addEventListener('click', this.#onOfferClick);
     }
+
+    this.#setDatePicker();
   }
 
   resetState(event) {
     this.updateElement(event);
+  }
+
+
+  #setDatePicker() {
+    this.#removeDatePicker();
+
+    this.#dateFromFlatpickr = flatpickr(this.element.querySelector('#event-start-time-1'),
+      {
+        ...DEFAULT_SETTING_FLATPICKR,
+        defaultDate: this._state.dateFrom,
+        maxDate: this._state.dateTo,
+        onChange: this.#onDateFromChange,
+      },
+    );
+
+    this.#dateToFlatpickr = flatpickr(this.element.querySelector('#event-end-time-1'),
+      {
+        ...DEFAULT_SETTING_FLATPICKR,
+        defaultDate: this._state.dateTo,
+        minDate: this._state.dateFrom,
+        onChange: this.#onDateToChange
+      },
+    );
+  }
+
+  #removeDatePicker() {
+    if (this.#dateFromFlatpickr) {
+      this.#dateFromFlatpickr.destroy();
+      this.#dateFromFlatpickr = null;
+    }
+    if (this.#dateToFlatpickr) {
+      this.#dateToFlatpickr.destroy();
+      this.#dateToFlatpickr = null;
+    }
   }
 
   #onFormSubmit = (evt) => {
@@ -209,10 +255,10 @@ export default class FormView extends AbstractStatefulView {
 
   #onDestinationChange = (evt) => {
     evt.preventDefault();
-    const selectedDestination = findObject(this.#allDestinations, 'name', evt.target.value);
+    const selectedDestination = this.#allDestinations.find((destination) => destination.name === evt.target.value);
 
     this.updateElement({
-      destination: selectedDestination ? selectedDestination.id : null
+      destination: selectedDestination ? selectedDestination.id : this._state.destination
     });
   };
 
@@ -221,6 +267,22 @@ export default class FormView extends AbstractStatefulView {
     this._setState({
       basePrice: Number.isInteger(+evt.target.value) ? +evt.target.value : 0
     });
+  };
+
+  #onDateFromChange = ([selectedDate]) => {
+    this._setState({
+      dateFrom: selectedDate.toISOString()
+    });
+
+    this.#dateToFlatpickr.set('minDate', selectedDate);
+  };
+
+  #onDateToChange = ([selectedDate]) => {
+    this._setState({
+      dateTo: selectedDate.toISOString()
+    });
+
+    this.#dateFromFlatpickr.set('maxDate', selectedDate);
   };
 
   #onOfferClick = (evt) => {
