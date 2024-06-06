@@ -2,6 +2,7 @@ import AbstractView from '../framework/view/abstract-view';
 import { reformatDate, calculateDuration } from '../utils/event.js';
 import { capitalizeFirstLetter } from '../utils/common.js';
 
+
 const createSelectedOffers = (allowedOffers, selectedOffers) =>
   allowedOffers.map((offer) =>
     selectedOffers.includes(offer.id)

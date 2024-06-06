@@ -28,7 +28,6 @@ const createFiltersTemplate = (currentFilter, filteredEvents) => `
 </form>
 `;
 
-
 export default class FiltersView extends AbstractView {
   #currentFilter = null;
   #filteredEvents = null;
