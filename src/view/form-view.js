@@ -1,4 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/themes/material_blue.css';
 import { EVENT_TYPES } from '../consts.js';
 import { reformatDate } from '../utils/event.js';
 import { capitalizeFirstLetter, findObject } from '../utils/common.js';
@@ -155,6 +157,8 @@ export default class FormView extends AbstractStatefulView {
   #allDestinations = null;
   #onFormSubmitCallback = null;
   #onCancelClickCallback = null;
+  #dateFromFlatpickr = null;
+  #dateToFlatpickr = null;
 
   constructor({event = EMPTY_EVENT, offers, destinations, onFormSubmit, onCancelClick}) {
     super();
@@ -183,10 +187,48 @@ export default class FormView extends AbstractStatefulView {
     if (availableOffersElement) {
       availableOffersElement.addEventListener('click', this.#onOfferClick);
     }
+
+    this.#setDatePicker();
   }
 
   resetState(event) {
     this.updateElement(event);
+  }
+
+
+  #setDatePicker() {
+    this.#removeDatePicker();
+
+    this.#dateFromFlatpickr = flatpickr(this.element.querySelector('#event-start-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.dateFrom,
+        maxDate: this._state.dateTo,
+        onChange: this.#onDateFromChange,
+      },
+    );
+
+    this.#dateToFlatpickr = flatpickr(this.element.querySelector('#event-end-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.dateTo,
+        minDate: this._state.dateFrom,
+        onChange: this.#onDateToChange
+      },
+    );
+  }
+
+  #removeDatePicker() {
+    if (this.#dateFromFlatpickr) {
+      this.#dateFromFlatpickr.destroy();
+      this.#dateFromFlatpickr = null;
+    }
+    if (this.#dateToFlatpickr) {
+      this.#dateToFlatpickr.destroy();
+      this.#dateToFlatpickr = null;
+    }
   }
 
   #onFormSubmit = (evt) => {
@@ -221,6 +263,22 @@ export default class FormView extends AbstractStatefulView {
     this._setState({
       basePrice: Number.isInteger(+evt.target.value) ? +evt.target.value : 0
     });
+  };
+
+  #onDateFromChange = ([selectedDate]) => {
+    this._setState({
+      dateFrom: selectedDate
+    });
+
+    this.#dateToFlatpickr.set('minDate', selectedDate);
+  };
+
+  #onDateToChange = ([selectedDate]) => {
+    this._setState({
+      dateTo: selectedDate
+    });
+
+    this.#dateFromFlatpickr.set('maxDate', selectedDate);
   };
 
   #onOfferClick = (evt) => {
