@@ -5,6 +5,12 @@ import { EVENT_TYPES } from '../consts.js';
 import { reformatDate } from '../utils/event.js';
 import { capitalizeFirstLetter, findObject } from '../utils/common.js';
 
+const DEFAULT_SETTING_FLATPICKR = {
+  enableTime: true,
+  dateFormat: 'd/m/y H:i',
+  minuteIncrement: 1
+};
+
 const EMPTY_EVENT = {
   basePrice: 0,
   dateFrom: new Date(),
@@ -201,8 +207,7 @@ export default class FormView extends AbstractStatefulView {
 
     this.#dateFromFlatpickr = flatpickr(this.element.querySelector('#event-start-time-1'),
       {
-        enableTime: true,
-        dateFormat: 'd/m/y H:i',
+        ...DEFAULT_SETTING_FLATPICKR,
         defaultDate: this._state.dateFrom,
         maxDate: this._state.dateTo,
         onChange: this.#onDateFromChange,
@@ -211,8 +216,7 @@ export default class FormView extends AbstractStatefulView {
 
     this.#dateToFlatpickr = flatpickr(this.element.querySelector('#event-end-time-1'),
       {
-        enableTime: true,
-        dateFormat: 'd/m/y H:i',
+        ...DEFAULT_SETTING_FLATPICKR,
         defaultDate: this._state.dateTo,
         minDate: this._state.dateFrom,
         onChange: this.#onDateToChange
@@ -267,7 +271,7 @@ export default class FormView extends AbstractStatefulView {
 
   #onDateFromChange = ([selectedDate]) => {
     this._setState({
-      dateFrom: selectedDate
+      dateFrom: selectedDate.toISOString()
     });
 
     this.#dateToFlatpickr.set('minDate', selectedDate);
@@ -275,7 +279,7 @@ export default class FormView extends AbstractStatefulView {
 
   #onDateToChange = ([selectedDate]) => {
     this._setState({
-      dateTo: selectedDate
+      dateTo: selectedDate.toISOString()
     });
 
     this.#dateFromFlatpickr.set('maxDate', selectedDate);
