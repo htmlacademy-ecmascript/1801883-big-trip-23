@@ -229,7 +229,6 @@ export default class FormView extends AbstractStatefulView {
     }
     let selectedOffers = [...this._state.offers];
 
-
     if (evt.target.checked) {
       selectedOffers.push(evt.target.id);
     } else {
