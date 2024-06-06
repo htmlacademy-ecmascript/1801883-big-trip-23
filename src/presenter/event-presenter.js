@@ -68,6 +68,7 @@ export default class EventPresenter {
       newComponent = this.#eventItemView;
       oldComponent = this.#formEditView;
       document.removeEventListener('keydown', this.#onEscKeydown);
+      this.#formEditView.resetState(this.#event);
     } else {
       newComponent = this.#formEditView;
       oldComponent = this.#eventItemView;
@@ -102,6 +103,7 @@ export default class EventPresenter {
   #onEscKeydown = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
+      this.#formEditView.resetState(this.#event);
       this.#switchEventAndForm();
     }
   };

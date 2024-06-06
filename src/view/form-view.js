@@ -167,6 +167,9 @@ export default class FormView extends AbstractStatefulView {
     this._restoreHandlers();
   }
 
+  get template() {
+    return createFormTemplate(this._state, this.#allDestinations, this.#allOffers);
+  }
 
   _restoreHandlers() {
     this.element.querySelector('form.event--edit').addEventListener('submit', this.#onFormSubmit);
@@ -182,8 +185,8 @@ export default class FormView extends AbstractStatefulView {
     }
   }
 
-  get template() {
-    return createFormTemplate(this._state, this.#allDestinations, this.#allOffers);
+  resetState(event) {
+    this.updateElement(event);
   }
 
   #onFormSubmit = (evt) => {
