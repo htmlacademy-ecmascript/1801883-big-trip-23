@@ -174,7 +174,12 @@ export default class FormView extends AbstractStatefulView {
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onCancelClick);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#onTypeChange);
     this.element.querySelector('#event-destination-1').addEventListener('change', this.#onDestinationChange);
-    this.element.querySelector('#event-price-1').addEventListener('change', this.#onPriceChange);
+    this.element.querySelector('#event-price-1').addEventListener('input', this.#onPriceInput);
+
+    const availableOffersElement = this.element.querySelector('.event__available-offers');
+    if (availableOffersElement) {
+      availableOffersElement.addEventListener('click', this.#onOfferClick);
+    }
   }
 
   get template() {
@@ -208,7 +213,28 @@ export default class FormView extends AbstractStatefulView {
     });
   };
 
-  #onPriceChange = (evt) => {
+  #onPriceInput = (evt) => {
     evt.preventDefault();
+    this._setState({
+      basePrice: Number.isInteger(+evt.target.value) ? +evt.target.value : 0
+    });
+  };
+
+  #onOfferClick = (evt) => {
+    if (evt.target.tagName !== 'INPUT') {
+      return;
+    }
+    let selectedOffers = [...this._state.offers];
+
+
+    if (evt.target.checked) {
+      selectedOffers.push(evt.target.id);
+    } else {
+      selectedOffers = selectedOffers.filter((offer) => offer !== evt.target.id);
+    }
+
+    this.updateElement({
+      offers: selectedOffers
+    });
   };
 }
