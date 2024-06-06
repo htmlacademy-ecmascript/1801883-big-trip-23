@@ -3,7 +3,7 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/themes/material_blue.css';
 import { EVENT_TYPES } from '../consts.js';
 import { reformatDate } from '../utils/event.js';
-import { capitalizeFirstLetter, findObject } from '../utils/common.js';
+import { capitalizeFirstLetter } from '../utils/common.js';
 
 const DEFAULT_SETTING_FLATPICKR = {
   enableTime: true,
@@ -137,8 +137,8 @@ const createFormTemplate = (event, allDestinations, allOffers) => {
   const {id, basePrice, dateFrom, dateTo, destination, offers, type} = event;
   const startDate = reformatDate(dateFrom);
   const endDate = reformatDate(dateTo);
-  const myDestination = findObject(allDestinations, 'id', destination);
-  const availableOffers = type ? findObject(allOffers, 'type', type).offers : [];
+  const myDestination = allDestinations.find((item) => item.id === destination);
+  const availableOffers = type ? allOffers.find((item) => item.type === type).offers : [];
   const isOffersEnable = availableOffers.length > 0;
 
   return (
@@ -255,7 +255,7 @@ export default class FormView extends AbstractStatefulView {
 
   #onDestinationChange = (evt) => {
     evt.preventDefault();
-    const selectedDestination = findObject(this.#allDestinations, 'name', evt.target.value);
+    const selectedDestination = this.#allDestinations.find((destination) => destination.name === evt.target.value);
 
     this.updateElement({
       destination: selectedDestination ? selectedDestination.id : null
