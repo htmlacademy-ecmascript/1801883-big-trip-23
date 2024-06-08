@@ -1,6 +1,5 @@
 import { RenderPosition, render, remove } from '../framework/render.js';
 import { Filters, SortTypes } from '../consts.js';
-import { updateItem } from '../utils/common.js';
 import EventsListView from '../view/events-list-view.js';
 import SortPanelView from '../view/sort-panel-view.js';
 import EmptyListView from '../view/empty-list-view';
@@ -24,7 +23,7 @@ export default class TripPresenter {
   }
 
   get #events () {
-    return [...this.#model.events];
+    return [...this.#model.events].sort(SortTypes[this.#currentSortType.toUpperCase()].sortMethod);
   }
 
   get #destinations () {
@@ -35,9 +34,10 @@ export default class TripPresenter {
     return this.#model.offers;
   }
 
+
   init() {
     this.#renderSortPanel();
-    this.#sortEvents();
+    this.#renderEventsList();
   }
 
   #renderEmptyList() {
@@ -49,7 +49,7 @@ export default class TripPresenter {
     this.#sortPanelView = new SortPanelView(
       {
         currentSortType: this.#currentSortType,
-        onSortTypeChange: this.#sortEvents
+        onSortTypeChange: this.#onSortTypeChange
       }
     );
     render(this.#sortPanelView, this.#eventsContainerElement, RenderPosition.AFTERBEGIN);
@@ -69,11 +69,6 @@ export default class TripPresenter {
   }
 
   #renderEventsList() {
-    render(this.#eventsListView, this.#eventsContainerElement);
-    this.#events.forEach((item) => this.#renderEvent(item));
-  }
-
-  #rerenderEventsList() {
     if (this.#events.length === 0) {
       this.#renderEmptyList();
       return;
@@ -82,7 +77,9 @@ export default class TripPresenter {
     if (this.#eventPresenters.size > 0) {
       this.#clearEventsList();
     }
-    this.#renderEventsList();
+
+    render(this.#eventsListView, this.#eventsContainerElement);
+    this.#events.forEach((item) => this.#renderEvent(item));
   }
 
   #clearEventsList = () => {
@@ -91,20 +88,19 @@ export default class TripPresenter {
     remove(this.#eventsListView);
   };
 
-  #sortEvents = (currentSortType = this.#currentSortType) => {
-    this.#currentSortType = currentSortType;
-    this.#events.sort(SortTypes[currentSortType.toUpperCase()].sortMethod);
-
-    this.#rerenderEventsList();
+  #closeAllForms = () => {
+    this.#eventPresenters.forEach((presenter) => presenter.closeForm());
   };
 
   #updateEvent = (updatedEvent) => {
-    this.#events = updateItem(this.#events, updatedEvent);
+    // Здесь будем вызывать обновление модели
+
+    // this.#events = updateItem(this.#events, updatedEvent);
     this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
-    this.#sortEvents();
   };
 
-  #closeAllForms = () => {
-    this.#eventPresenters.forEach((presenter) => presenter.closeForm());
+  #onSortTypeChange = (currentSortType = this.#currentSortType) => {
+    this.#currentSortType = currentSortType;
+    this.#renderEventsList();
   };
 }
