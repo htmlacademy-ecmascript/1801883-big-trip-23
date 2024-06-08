@@ -55,4 +55,17 @@ const SortTypes = {
   },
 };
 
-export { EVENT_TYPES, Filters, SortTypes };
+const UserAction = {
+  UPDATE: 'UPDATE_EVENT',
+  ADD: 'ADD_EVENT',
+  DELETE: 'DELETE_EVENT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+
+export { EVENT_TYPES, Filters, SortTypes, UserAction, UpdateType };

@@ -20,4 +20,19 @@ export default class EventsModel extends Observable {
   get events() {
     return this.#events;
   }
+
+  updateEvent(updateType, updatedEvent) {
+    this.#events = this.#events.map((event) => event.id === updatedEvent.id ? updatedEvent : event);
+    this._notify(updateType, updatedEvent);
+  }
+
+  addEvent(updateType, newEvent) {
+    this.#events.push(newEvent);
+    this._notify(updateType, newEvent);
+  }
+
+  deleteEvent(updateType, deletedEvent) {
+    this.#events = this.#events.filter((event) => event.id !== deletedEvent.id);
+    this._notify(updateType, deletedEvent);
+  }
 }

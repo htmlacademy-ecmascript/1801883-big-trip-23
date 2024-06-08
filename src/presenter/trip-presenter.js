@@ -20,6 +20,8 @@ export default class TripPresenter {
   constructor ({eventsContainer, eventsModel}) {
     this.#eventsContainerElement = eventsContainer;
     this.#model = eventsModel;
+
+    this.#model.addObserver(this.#onModelChange);
   }
 
   get #events () {
@@ -60,7 +62,7 @@ export default class TripPresenter {
       {
         eventsListContainer: this.#eventsListView.element,
         closeAllForms: this.#closeAllForms,
-        onEventChange: this.#updateEvent
+        onEventUpdate: this.#onEventUpdate
       }
     );
     this.#eventPresenters.set(event.id, eventPresenter);
@@ -92,11 +94,22 @@ export default class TripPresenter {
     this.#eventPresenters.forEach((presenter) => presenter.closeForm());
   };
 
-  #updateEvent = (updatedEvent) => {
-    // Здесь будем вызывать обновление модели
+  #onEventUpdate = (action, updateType, updatedEvent) => {
+    console.log(action, updateType, updatedEvent);
+    // Здесь будем вызывать обновление модели.
+    // action - действие пользователя, нужно чтобы понять, какой метод модели вызвать
+    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
+    // updatedEvent - обновленные данные
 
-    // this.#events = updateItem(this.#events, updatedEvent);
-    this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
+    // this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
+  };
+
+  #onModelChange = (updateType, data) => {
+    console.log(updateType, data);
+    // В зависимости от типа изменений решаем, что делать:
+    // - обновить часть списка (например, когда поменялось описание)
+    // - обновить список (например, когда задача ушла в архив)
+    // - обновить всю доску (например, при переключении фильтра)
   };
 
   #onSortTypeChange = (currentSortType = this.#currentSortType) => {

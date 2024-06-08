@@ -1,4 +1,5 @@
 import { render, replace, remove } from '../framework/render.js';
+import { UserAction, UpdateType } from '../consts.js';
 import EventItemView from '../view/event-item-view.js';
 import FormView from '../view/form-view.js';
 
@@ -6,7 +7,7 @@ import FormView from '../view/form-view.js';
 export default class EventPresenter {
   #eventsListContainerElement = null;
   #closeAllFormsCallback = null;
-  #onEventChangeCallback = null;
+  #onEventUpdateCallback = null;
   #eventItemView = null;
   #formEditView = null;
 
@@ -15,10 +16,10 @@ export default class EventPresenter {
   #offers = [];
   #isEditMode = false;
 
-  constructor ({eventsListContainer, onEventChange, closeAllForms}) {
+  constructor ({eventsListContainer, onEventUpdate, closeAllForms}) {
     this.#eventsListContainerElement = eventsListContainer;
     this.#closeAllFormsCallback = closeAllForms;
-    this.#onEventChangeCallback = onEventChange;
+    this.#onEventUpdateCallback = onEventUpdate;
   }
 
   #renderEvent() {
@@ -109,11 +110,11 @@ export default class EventPresenter {
   };
 
   #onFavoriteButtonClick = (updatedEvent) => {
-    this.#onEventChangeCallback(updatedEvent);
+    this.#onEventUpdateCallback(UserAction.UPDATE, UpdateType.PATCH, updatedEvent);
   };
 
   #onFormSubmit = (updatedEvent) => {
-    this.#onEventChangeCallback(updatedEvent);
+    this.#onEventUpdateCallback(UserAction.UPDATE, UpdateType.MINOR, updatedEvent);
     this.#switchEventAndForm();
   };
 }
