@@ -1,5 +1,5 @@
 import { RenderPosition, render, remove } from '../framework/render.js';
-import { Filters, SortTypes } from '../consts.js';
+import { Filters, SortTypes, UserAction, UpdateType } from '../consts.js';
 import EventsListView from '../view/events-list-view.js';
 import SortPanelView from '../view/sort-panel-view.js';
 import EmptyListView from '../view/empty-list-view';
@@ -95,21 +95,28 @@ export default class TripPresenter {
   };
 
   #onEventUpdate = (action, updateType, updatedEvent) => {
-    console.log(action, updateType, updatedEvent);
-    // Здесь будем вызывать обновление модели.
-    // action - действие пользователя, нужно чтобы понять, какой метод модели вызвать
-    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
-    // updatedEvent - обновленные данные
-
-    // this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
+    switch (action) {
+      case UserAction.UPDATE:
+        this.#model.updateEvent(updateType, updatedEvent);
+        break;
+      case UserAction.ADD:
+        this.#model.addEvent(updateType, updatedEvent);
+        break;
+      case UserAction.DELETE:
+        this.#model.deleteEvent(updateType, updatedEvent);
+        break;
+    }
   };
 
-  #onModelChange = (updateType, data) => {
-    console.log(updateType, data);
-    // В зависимости от типа изменений решаем, что делать:
-    // - обновить часть списка (например, когда поменялось описание)
-    // - обновить список (например, когда задача ушла в архив)
-    // - обновить всю доску (например, при переключении фильтра)
+  #onModelChange = (updateType, updatedEvent) => {
+    switch (updateType) {
+      case UpdateType.MINOR:
+        this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
+        break;
+      case UpdateType.MAJOR:
+        this.#renderEventsList();
+        break;
+    }
   };
 
   #onSortTypeChange = (currentSortType = this.#currentSortType) => {

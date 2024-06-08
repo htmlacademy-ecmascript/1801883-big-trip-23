@@ -110,11 +110,11 @@ export default class EventPresenter {
   };
 
   #onFavoriteButtonClick = (updatedEvent) => {
-    this.#onEventUpdateCallback(UserAction.UPDATE, UpdateType.PATCH, updatedEvent);
+    this.#onEventUpdateCallback(UserAction.UPDATE, UpdateType.MINOR, updatedEvent);
   };
 
   #onFormSubmit = (updatedEvent) => {
-    this.#onEventUpdateCallback(UserAction.UPDATE, UpdateType.MINOR, updatedEvent);
+    this.#onEventUpdateCallback(UserAction.UPDATE, UpdateType.MAJOR, updatedEvent);
     this.#switchEventAndForm();
   };
 }
