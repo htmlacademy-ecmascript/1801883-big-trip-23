@@ -15,9 +15,6 @@ export default class TripPresenter {
   #eventsListView = new EventsListView();
   #eventPresenters = new Map();
 
-  #destinations = [];
-  #offers = [];
-  #events = [];
   #currentFilter = Filters.EVERYTHING.name;
   #currentSortType = SortTypes.DAY.name;
 
@@ -26,11 +23,19 @@ export default class TripPresenter {
     this.#model = eventsModel;
   }
 
-  init() {
-    this.#destinations = [...this.#model.destinations];
-    this.#offers = [...this.#model.offers];
-    this.#events = [...this.#model.events];
+  get #events () {
+    return [...this.#model.events];
+  }
 
+  get #destinations () {
+    return this.#model.destinations;
+  }
+
+  get #offers () {
+    return this.#model.offers;
+  }
+
+  init() {
     this.#renderSortPanel();
     this.#sortEvents();
   }

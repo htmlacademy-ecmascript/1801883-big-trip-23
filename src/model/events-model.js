@@ -1,9 +1,10 @@
+import Observable from '../framework/observable.js';
 import { getMockOffers } from '../mock/offers-data.js';
 import { getMockDestinations } from '../mock/destinations-data.js';
 import { getMockEvents } from '../mock/events-data.js';
 
 
-export default class EventsModel {
+export default class EventsModel extends Observable {
   #offers = getMockOffers();
   #destinations = getMockDestinations();
   #events = getMockEvents(this.#offers, this.#destinations);
