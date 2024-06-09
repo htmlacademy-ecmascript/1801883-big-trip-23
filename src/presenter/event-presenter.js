@@ -22,6 +22,27 @@ export default class EventPresenter {
     this.#onEventUpdateCallback = onEventUpdate;
   }
 
+
+  init(event, offers = this.#offers, destinations = this.#destinations) {
+    this.#event = event;
+    this.#offers = offers;
+    this.#destinations = destinations;
+
+    this.#renderEvent();
+  }
+
+  closeForm () {
+    if (this.#isEditMode) {
+      this.#switchEventAndForm();
+    }
+  }
+
+  destroy() {
+    remove(this.#eventItemView);
+    remove(this.#formEditView);
+    document.removeEventListener('keydown', this.#onEscKeydown);
+  }
+
   #renderEvent() {
     const prevEventItemView = this.#eventItemView;
     const prevFormEditView = this.#formEditView;
@@ -42,7 +63,8 @@ export default class EventPresenter {
         offers: this.#offers,
         destinations: this.#destinations,
         onFormSubmit: this.#onFormSubmit,
-        onCancelClick: this.#switchEventAndForm
+        onCancelClick: this.#switchEventAndForm,
+        onDeleteClick: this.#onDeleteClick
       }
     );
 
@@ -80,27 +102,6 @@ export default class EventPresenter {
     replace(newComponent, oldComponent);
   };
 
-
-  init(event, offers = this.#offers, destinations = this.#destinations) {
-    this.#event = event;
-    this.#offers = offers;
-    this.#destinations = destinations;
-
-    this.#renderEvent();
-  }
-
-  closeForm () {
-    if (this.#isEditMode) {
-      this.#switchEventAndForm();
-    }
-  }
-
-  destroy() {
-    remove(this.#eventItemView);
-    remove(this.#formEditView);
-    document.removeEventListener('keydown', this.#onEscKeydown);
-  }
-
   #onEscKeydown = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
@@ -116,5 +117,9 @@ export default class EventPresenter {
   #onFormSubmit = (updatedEvent) => {
     this.#onEventUpdateCallback(UserAction.UPDATE, UpdateType.MAJOR, updatedEvent);
     this.#switchEventAndForm();
+  };
+
+  #onDeleteClick = (deletedEvent) => {
+    this.#onEventUpdateCallback(UserAction.DELETE, UpdateType.MAJOR, deletedEvent);
   };
 }

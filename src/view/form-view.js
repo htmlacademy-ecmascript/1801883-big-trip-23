@@ -163,10 +163,11 @@ export default class FormView extends AbstractStatefulView {
   #allDestinations = null;
   #onFormSubmitCallback = null;
   #onCancelClickCallback = null;
+  #onDeleteClickCallback = null;
   #dateFromFlatpickr = null;
   #dateToFlatpickr = null;
 
-  constructor({event = EMPTY_EVENT, offers, destinations, onFormSubmit, onCancelClick}) {
+  constructor({event = EMPTY_EVENT, offers, destinations, onFormSubmit, onCancelClick, onDeleteClick}) {
     super();
     this._state = {...event};
     this.#allOffers = offers;
@@ -174,6 +175,7 @@ export default class FormView extends AbstractStatefulView {
 
     this.#onFormSubmitCallback = onFormSubmit;
     this.#onCancelClickCallback = onCancelClick;
+    this.#onDeleteClickCallback = onDeleteClick;
     this._restoreHandlers();
   }
 
@@ -184,7 +186,7 @@ export default class FormView extends AbstractStatefulView {
   _restoreHandlers() {
     this.element.querySelector('form.event--edit').addEventListener('submit', this.#onFormSubmit);
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCancelClick);
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onCancelClick);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onDeleteClick);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#onTypeChange);
     this.element.querySelector('#event-destination-1').addEventListener('change', this.#onDestinationChange);
     this.element.querySelector('#event-price-1').addEventListener('input', this.#onPriceInput);
@@ -234,16 +236,6 @@ export default class FormView extends AbstractStatefulView {
       this.#dateToFlatpickr = null;
     }
   }
-
-  #onFormSubmit = (evt) => {
-    evt.preventDefault();
-    this.#onFormSubmitCallback({...this._state});
-  };
-
-  #onCancelClick = (evt) => {
-    evt.preventDefault();
-    this.#onCancelClickCallback();
-  };
 
   #onTypeChange = (evt) => {
     evt.preventDefault();
@@ -300,5 +292,23 @@ export default class FormView extends AbstractStatefulView {
     this.updateElement({
       offers: selectedOffers
     });
+  };
+
+  #onFormSubmit = (evt) => {
+    evt.preventDefault();
+    this.#onFormSubmitCallback({...this._state});
+  };
+
+  #onCancelClick = (evt) => {
+    evt.preventDefault();
+    this.#onCancelClickCallback();
+  };
+
+  #onDeleteClick = (evt) => {
+    this.#onCancelClick(evt);
+
+    if (this._state.id) {
+      this.#onDeleteClickCallback({id: this._state.id});
+    }
   };
 }
