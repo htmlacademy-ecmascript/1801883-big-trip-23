@@ -70,14 +70,19 @@ export default class TripPresenter {
     eventPresenter.init(event, this.#offers, this.#destinations);
   }
 
-  #renderEventsList() {
-    if (this.#events.length === 0) {
-      this.#renderEmptyList();
-      return;
+  #renderEventsList(resetSortType = false) {
+    if (resetSortType) {
+      this.#currentSortType = SortTypes.DAY.name;
     }
 
     if (this.#eventPresenters.size > 0) {
       this.#clearEventsList();
+    }
+
+    if (this.#events.length === 0) {
+      remove(this.#sortPanelView);
+      this.#renderEmptyList();
+      return;
     }
 
     render(this.#eventsListView, this.#eventsContainerElement);
