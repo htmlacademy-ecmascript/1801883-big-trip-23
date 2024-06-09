@@ -1,5 +1,6 @@
 import { render, replace, remove } from '../framework/render.js';
 import { UserAction, UpdateType } from '../consts.js';
+import { isDatesEqual } from '../utils/event.js';
 import EventItemView from '../view/event-item-view.js';
 import FormView from '../view/form-view.js';
 
@@ -115,7 +116,12 @@ export default class EventPresenter {
   };
 
   #onFormSubmit = (updatedEvent) => {
-    this.#onEventUpdateCallback(UserAction.UPDATE, UpdateType.MAJOR, updatedEvent);
+    const isMajorUpdate =
+      this.#event.basePrice !== updatedEvent.basePrice ||
+      !isDatesEqual(this.#event.dateFrom, updatedEvent.dateFrom) ||
+      !isDatesEqual(this.#event.dateTo, updatedEvent.dateTo);
+
+    this.#onEventUpdateCallback(UserAction.UPDATE, isMajorUpdate ? UpdateType.MAJOR : UpdateType.MINOR, updatedEvent);
     this.#switchEventAndForm();
   };
 

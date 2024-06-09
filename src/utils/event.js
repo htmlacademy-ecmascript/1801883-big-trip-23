@@ -28,5 +28,7 @@ const calculateDuration = (startDate, endDate) => {
   return durationValue.format('mm[M]');
 };
 
+const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
 
-export { reformatDate, calculateDuration };
+
+export { reformatDate, calculateDuration, isDatesEqual };
