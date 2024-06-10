@@ -1,5 +1,5 @@
 import { RenderPosition, render, remove } from '../framework/render.js';
-import { Filters, SortTypes, UserAction, UpdateType } from '../consts.js';
+import { SortTypes, UserAction, UpdateType } from '../consts.js';
 import EventsListView from '../view/events-list-view.js';
 import SortPanelView from '../view/sort-panel-view.js';
 import EmptyListView from '../view/empty-list-view';
@@ -8,34 +8,40 @@ import EventPresenter from './event-presenter.js';
 
 export default class TripPresenter {
   #eventsContainerElement = null;
-  #model = null;
+  #filterModel = null;
+  #eventsModel = null;
   #emptyListView = null;
   #sortPanelView = null;
   #eventsListView = new EventsListView();
   #eventPresenters = new Map();
-
-  #currentFilter = Filters.EVERYTHING.name;
   #currentSortType = SortTypes.DAY.name;
 
-  constructor ({eventsContainer, eventsModel}) {
+  constructor ({eventsContainer, filterModel, eventsModel}) {
     this.#eventsContainerElement = eventsContainer;
-    this.#model = eventsModel;
+    this.#filterModel = filterModel;
+    this.#eventsModel = eventsModel;
 
-    this.#model.addObserver(this.#onModelChange);
+    this.#filterModel.addObserver(this.#onModelChange);
+    this.#eventsModel.addObserver(this.#onModelChange);
   }
 
   get #events () {
-    return [...this.#model.events].sort(SortTypes[this.#currentSortType.toUpperCase()].sortMethod);
+    return this.#currentFilter.filterMethod(
+      [...this.#eventsModel.events].sort(SortTypes[this.#currentSortType.toUpperCase()].sortMethod)
+    );
   }
 
   get #destinations () {
-    return this.#model.destinations;
+    return this.#eventsModel.destinations;
   }
 
   get #offers () {
-    return this.#model.offers;
+    return this.#eventsModel.offers;
   }
 
+  get #currentFilter () {
+    return this.#filterModel.filter;
+  }
 
   init() {
     this.#renderSortPanel();
@@ -75,9 +81,7 @@ export default class TripPresenter {
       this.#currentSortType = SortTypes.DAY.name;
     }
 
-    if (this.#eventPresenters.size > 0) {
-      this.#clearEventsList();
-    }
+    this.#clearEventsList();
 
     if (this.#events.length === 0) {
       remove(this.#sortPanelView);
@@ -93,6 +97,7 @@ export default class TripPresenter {
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPresenters.clear();
     remove(this.#eventsListView);
+    remove(this.#emptyListView);
   };
 
   #closeAllForms = () => {
@@ -102,13 +107,13 @@ export default class TripPresenter {
   #onEventUpdate = (action, updateType, updatedEvent) => {
     switch (action) {
       case UserAction.UPDATE:
-        this.#model.updateEvent(updateType, updatedEvent);
+        this.#eventsModel.updateEvent(updateType, updatedEvent);
         break;
       case UserAction.ADD:
-        this.#model.addEvent(updateType, updatedEvent);
+        this.#eventsModel.addEvent(updateType, updatedEvent);
         break;
       case UserAction.DELETE:
-        this.#model.deleteEvent(updateType, updatedEvent);
+        this.#eventsModel.deleteEvent(updateType, updatedEvent);
         break;
     }
   };

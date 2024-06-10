@@ -22,7 +22,7 @@ const createFilterItem = (type, isChecked, isDisabled) => `
 const createFiltersTemplate = (currentFilter, filteredEvents) => `
 <form class="trip-filters" action="#" method="get">
   ${Object.values(Filters)
-    .map((filter) => createFilterItem(filter.name, filter.name === currentFilter, filteredEvents[filter.name].length === 0))
+    .map((filter) => createFilterItem(filter.name, filter.name === currentFilter, filteredEvents[filter.name] === 0))
     .join('')}
   <button class="visually-hidden" type="submit">Accept filter</button>
 </form>
@@ -31,14 +31,24 @@ const createFiltersTemplate = (currentFilter, filteredEvents) => `
 export default class FiltersView extends AbstractView {
   #currentFilter = null;
   #filteredEvents = null;
+  #onFilterChangeCallback = null;
 
-  constructor({currentFilter, filteredEvents}) {
+  constructor({currentFilter, filteredEvents, onFilterChange}) {
     super();
-    this.#currentFilter = currentFilter.toLowerCase();
+    this.#currentFilter = currentFilter;
     this.#filteredEvents = filteredEvents;
+    this.#onFilterChangeCallback = onFilterChange;
+    this.element.addEventListener('change', this.#onFilterChange);
   }
 
   get template() {
     return createFiltersTemplate(this.#currentFilter, this.#filteredEvents);
   }
+
+  #onFilterChange = (evt) => {
+    evt.preventDefault();
+    if (evt.target.tagName === 'INPUT') {
+      this.#onFilterChangeCallback(evt.target.value.toUpperCase());
+    }
+  };
 }
