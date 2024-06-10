@@ -11,6 +11,6 @@ export default class FilterModel extends Observable {
 
   set filter(selectedFilter) {
     this.#filter = selectedFilter;
-    this._notify(UpdateType.MAJOR, selectedFilter);
+    this._notify(UpdateType.MAJOR, {...{isFilterChange: true}, ...selectedFilter});
   }
 }

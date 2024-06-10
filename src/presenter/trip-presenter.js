@@ -1,4 +1,4 @@
-import { RenderPosition, render, remove } from '../framework/render.js';
+import { RenderPosition, render, replace, remove } from '../framework/render.js';
 import { SortTypes, UserAction, UpdateType } from '../consts.js';
 import EventsListView from '../view/events-list-view.js';
 import SortPanelView from '../view/sort-panel-view.js';
@@ -54,13 +54,22 @@ export default class TripPresenter {
   }
 
   #renderSortPanel() {
+    const prevSortPanelView = this.#sortPanelView;
+
     this.#sortPanelView = new SortPanelView(
       {
         currentSortType: this.#currentSortType,
         onSortTypeChange: this.#onSortTypeChange
       }
     );
-    render(this.#sortPanelView, this.#eventsContainerElement, RenderPosition.AFTERBEGIN);
+
+    if (prevSortPanelView === null) {
+      render(this.#sortPanelView, this.#eventsContainerElement, RenderPosition.AFTERBEGIN);
+      return;
+    }
+
+    replace(this.#sortPanelView, prevSortPanelView);
+    remove(prevSortPanelView);
   }
 
   #renderEvent(event) {
@@ -79,6 +88,7 @@ export default class TripPresenter {
   #renderEventsList(resetSortType = false) {
     if (resetSortType) {
       this.#currentSortType = SortTypes.DAY.name;
+      this.#renderSortPanel();
     }
 
     this.#clearEventsList();
@@ -118,13 +128,13 @@ export default class TripPresenter {
     }
   };
 
-  #onModelChange = (updateType, updatedEvent) => {
+  #onModelChange = (updateType, updatedItem) => {
     switch (updateType) {
       case UpdateType.MINOR:
-        this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
+        this.#eventPresenters.get(updatedItem.id).init(updatedItem);
         break;
       case UpdateType.MAJOR:
-        this.#renderEventsList();
+        this.#renderEventsList(updatedItem.isFilterChange);
         break;
     }
   };
