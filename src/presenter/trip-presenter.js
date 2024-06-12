@@ -108,7 +108,11 @@ export default class TripPresenter {
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPresenters.clear();
     remove(this.#eventsListView);
-    remove(this.#emptyListView);
+
+    if (this.#emptyListView) {
+      remove(this.#emptyListView);
+      this.#emptyListView = null;
+    }
   };
 
   #closeAllForms = () => {
