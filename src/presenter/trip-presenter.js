@@ -26,9 +26,9 @@ export default class TripPresenter {
   }
 
   get #events () {
-    return this.#currentFilter.filterMethod(
-      [...this.#eventsModel.events].sort(SortTypes[this.#currentSortType.toUpperCase()].sortMethod)
-    );
+    const sortType = SortTypes[this.#currentSortType.toUpperCase()];
+    const sortedEvents = [...this.#eventsModel.events].sort(sortType.sortMethod);
+    return this.#currentFilter.filterMethod(sortedEvents);
   }
 
   get #destinations () {
@@ -95,6 +95,7 @@ export default class TripPresenter {
 
     if (this.#events.length === 0) {
       remove(this.#sortPanelView);
+      this.#sortPanelView = null;
       this.#renderEmptyList();
       return;
     }

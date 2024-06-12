@@ -66,16 +66,16 @@ export default class HeaderPresenter {
   #renderFilters() {
     const prevFiltersView = this.#filtersView;
     const events = this.#events;
-    const filteredEvents = {};
+    const isEnabledFilters = {};
 
     Object.values(Filters).forEach((filter) => {
-      filteredEvents[filter.name] = filter.filterMethod(events).length;
+      isEnabledFilters[filter.name] = filter.filterMethod(events).length > 0;
     });
 
     this.#filtersView = new FiltersView(
       {
         currentFilter: this.#currentFilter.name,
-        filteredEvents: filteredEvents,
+        isEnabledFilters: isEnabledFilters,
         onFilterChange: this.#onFilterChange
       }
     );
