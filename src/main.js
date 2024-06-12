@@ -18,6 +18,7 @@ const headerPresenter = new HeaderPresenter(
 const tripPresenter = new TripPresenter(
   {
     eventsContainer: document.querySelector('.trip-events'),
+    newEventButton: document.querySelector('.trip-main__event-add-btn'),
     filterModel: filterModel,
     eventsModel: eventsModel
   }

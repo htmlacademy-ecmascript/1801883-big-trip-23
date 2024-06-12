@@ -8,6 +8,7 @@ import EventPresenter from './event-presenter.js';
 
 export default class TripPresenter {
   #eventsContainerElement = null;
+  #newEventButtonElement = null;
   #filterModel = null;
   #eventsModel = null;
   #emptyListView = null;
@@ -16,11 +17,13 @@ export default class TripPresenter {
   #eventPresenters = new Map();
   #currentSortType = SortTypes.DAY.name;
 
-  constructor ({eventsContainer, filterModel, eventsModel}) {
+  constructor ({eventsContainer, newEventButton, filterModel, eventsModel}) {
     this.#eventsContainerElement = eventsContainer;
     this.#filterModel = filterModel;
     this.#eventsModel = eventsModel;
+    this.#newEventButtonElement = newEventButton;
 
+    this.#newEventButtonElement.addEventListener('click', this.#renderNewEventForm);
     this.#filterModel.addObserver(this.#onModelChange);
     this.#eventsModel.addObserver(this.#onModelChange);
   }
@@ -92,6 +95,7 @@ export default class TripPresenter {
     }
 
     this.#clearEventsList();
+    this.#newEventButtonElement.toggleAttribute('disabled', false);
 
     if (this.#events.length === 0) {
       remove(this.#sortPanelView);
@@ -113,6 +117,11 @@ export default class TripPresenter {
       remove(this.#emptyListView);
       this.#emptyListView = null;
     }
+  };
+
+  #renderNewEventForm = () => {
+    this.#filterModel.resetFilter();
+    this.#newEventButtonElement.toggleAttribute('disabled', true);
   };
 
   #closeAllForms = () => {

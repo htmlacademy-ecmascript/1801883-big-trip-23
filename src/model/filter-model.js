@@ -13,4 +13,8 @@ export default class FilterModel extends Observable {
     this.#filter = selectedFilter;
     this._notify(UpdateType.MAJOR, {isFilterChange: true, ...selectedFilter});
   }
+
+  resetFilter() {
+    this.filter = Filters.EVERYTHING;
+  }
 }
