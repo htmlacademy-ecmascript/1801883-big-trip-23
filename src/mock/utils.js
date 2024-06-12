@@ -9,7 +9,7 @@ const generateRandomInteger = (min = 0, max = 1000) => {
   return Math.floor(Math.random() * (processedMax - processedMin + 1) + processedMin);
 };
 
-const flipCoin = () => Math.round(Math.random());
+const flipCoin = () => Boolean(Math.round(Math.random()));
 
 const getRandomArrayElement = (items) => items[generateRandomInteger(0, items.length - 1)];
 

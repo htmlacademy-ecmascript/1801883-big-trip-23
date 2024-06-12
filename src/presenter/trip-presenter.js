@@ -3,6 +3,7 @@ import { SortTypes, UserAction, UpdateType } from '../consts.js';
 import EventsListView from '../view/events-list-view.js';
 import SortPanelView from '../view/sort-panel-view.js';
 import EmptyListView from '../view/empty-list-view';
+import NewEventPresenter from './new-event-presenter.js';
 import EventPresenter from './event-presenter.js';
 
 
@@ -15,7 +16,9 @@ export default class TripPresenter {
   #sortPanelView = null;
   #eventsListView = new EventsListView();
   #eventPresenters = new Map();
+  #newEventPresenter = null;
   #currentSortType = SortTypes.DAY.name;
+  #isNewEventMode = false;
 
   constructor ({eventsContainer, newEventButton, filterModel, eventsModel}) {
     this.#eventsContainerElement = eventsContainer;
@@ -88,29 +91,36 @@ export default class TripPresenter {
     eventPresenter.init(event, this.#offers, this.#destinations);
   }
 
-  #renderEventsList(resetSortType = false) {
+  #renderEventsList = (resetSortType = false) => {
     if (resetSortType) {
       this.#currentSortType = SortTypes.DAY.name;
       this.#renderSortPanel();
     }
 
     this.#clearEventsList();
-    this.#newEventButtonElement.toggleAttribute('disabled', false);
 
     if (this.#events.length === 0) {
       remove(this.#sortPanelView);
       this.#sortPanelView = null;
-      this.#renderEmptyList();
-      return;
+
+      if (!this.#isNewEventMode) {
+        this.#renderEmptyList();
+        return;
+      }
     }
+    this.#isNewEventMode = false;
 
     render(this.#eventsListView, this.#eventsContainerElement);
     this.#events.forEach((item) => this.#renderEvent(item));
-  }
+  };
 
   #clearEventsList = () => {
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPresenters.clear();
+
+    if (this.#newEventPresenter) {
+      this.#newEventPresenter.destroy();
+    }
     remove(this.#eventsListView);
 
     if (this.#emptyListView) {
@@ -120,12 +130,26 @@ export default class TripPresenter {
   };
 
   #renderNewEventForm = () => {
+    this.#isNewEventMode = true;
     this.#filterModel.resetFilter();
-    this.#newEventButtonElement.toggleAttribute('disabled', true);
+
+    this.#newEventPresenter = new NewEventPresenter(
+      {
+        eventsListContainer: this.#eventsListView.element,
+        newEventButtonElement: this.#newEventButtonElement,
+        onEventAdd: this.#onEventUpdate,
+        onFormClose: this.#renderEventsList
+      }
+    );
+
+    this.#newEventPresenter.init(this.#offers, this.#destinations);
   };
 
   #closeAllForms = () => {
     this.#eventPresenters.forEach((presenter) => presenter.closeForm());
+    if (this.#newEventPresenter) {
+      this.#newEventPresenter.destroy();
+    }
   };
 
   #onEventUpdate = (action, updateType, updatedEvent) => {
