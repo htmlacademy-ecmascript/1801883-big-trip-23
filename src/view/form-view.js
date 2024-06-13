@@ -1,5 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
+import he from 'he';
 import 'flatpickr/dist/themes/material_blue.css';
 import { EVENT_TYPES } from '../consts.js';
 import { reformatDate } from '../utils/event.js';
@@ -52,11 +53,11 @@ const createHeader = (id, basePrice, startDate, endDate, destination, allDestina
           class="event__input event__input--destination"
           id="event-destination-1"
           type="text" name="event-destination"
-          value="${destination ? destination.name : ''}"
+          value="${destination ? he.encode(destination.name) : ''}"
           list="destination-list-1">
 
         <datalist id="destination-list-1">
-          ${allDestination.map((item) => `<option value="${item.name}"></option>`).join('')}
+          ${allDestination.map((item) => `<option value="${he.encode(item.name)}"></option>`).join('')}
         </datalist>
       </div>
 
@@ -73,7 +74,7 @@ const createHeader = (id, basePrice, startDate, endDate, destination, allDestina
           <span class="visually-hidden">Price</span>
           &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(basePrice.toString())}">
       </div>
 
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -264,9 +265,10 @@ export default class FormView extends AbstractStatefulView {
   };
 
   #onPriceInput = (evt) => {
-    evt.preventDefault();
+    evt.target.value = evt.target.value.replace(/[^0-9]/g, '');
+
     this._setState({
-      basePrice: Number.isInteger(+evt.target.value) ? +evt.target.value : 0
+      basePrice: evt.target.value ? +evt.target.value : 0
     });
   };
 
@@ -305,7 +307,9 @@ export default class FormView extends AbstractStatefulView {
 
   #onFormSubmit = (evt) => {
     evt.preventDefault();
-    this.#onFormSubmitCallback({...this._state, basePrice: +this._state.basePrice});
+    if (this._state.destination) {
+      this.#onFormSubmitCallback({...this._state, basePrice: +this._state.basePrice});
+    }
   };
 
   #onCancelClick = (evt) => {
