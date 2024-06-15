@@ -193,7 +193,7 @@ export default class FormView extends AbstractStatefulView {
     const availableOffersElement = this.element.querySelector('.event__available-offers');
     this.#setDatePicker();
 
-    if (availableOffersElement) {
+    if (availableOffersElement !== null) {
       availableOffersElement.addEventListener('click', this.#onOfferClick);
     }
     this.element.querySelector('form.event--edit').addEventListener('submit', this.#onFormSubmit);
