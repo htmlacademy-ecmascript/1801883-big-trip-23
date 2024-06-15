@@ -44,6 +44,14 @@ export default class HeaderPresenter {
   }
 
   #renderTripInfo() {
+    if (this.#events.length === 0) {
+      if (this.#tripInfoView) {
+        remove(this.#tripInfoView);
+        this.#tripInfoView = null;
+      }
+      return;
+    }
+
     const prevTripInfoView = this.#tripInfoView;
 
     this.#tripInfoView = new TripInfoView(
