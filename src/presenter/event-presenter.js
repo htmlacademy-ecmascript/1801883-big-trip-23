@@ -1,4 +1,6 @@
 import { render, replace, remove } from '../framework/render.js';
+import { UserAction, UpdateType } from '../consts.js';
+import { isDatesEqual } from '../utils/event.js';
 import EventItemView from '../view/event-item-view.js';
 import FormView from '../view/form-view.js';
 
@@ -6,7 +8,7 @@ import FormView from '../view/form-view.js';
 export default class EventPresenter {
   #eventsListContainerElement = null;
   #closeAllFormsCallback = null;
-  #onEventChangeCallback = null;
+  #onEventUpdateCallback = null;
   #eventItemView = null;
   #formEditView = null;
 
@@ -15,10 +17,31 @@ export default class EventPresenter {
   #offers = [];
   #isEditMode = false;
 
-  constructor ({eventsListContainer, onEventChange, closeAllForms}) {
+  constructor ({eventsListContainer, onEventUpdate, closeAllForms}) {
     this.#eventsListContainerElement = eventsListContainer;
     this.#closeAllFormsCallback = closeAllForms;
-    this.#onEventChangeCallback = onEventChange;
+    this.#onEventUpdateCallback = onEventUpdate;
+  }
+
+
+  init(event, offers = this.#offers, destinations = this.#destinations) {
+    this.#event = event;
+    this.#offers = offers;
+    this.#destinations = destinations;
+
+    this.#renderEvent();
+  }
+
+  closeForm () {
+    if (this.#isEditMode) {
+      this.#switchEventAndForm();
+    }
+  }
+
+  destroy() {
+    remove(this.#eventItemView);
+    remove(this.#formEditView);
+    document.removeEventListener('keydown', this.#onEscKeydown);
   }
 
   #renderEvent() {
@@ -41,7 +64,8 @@ export default class EventPresenter {
         offers: this.#offers,
         destinations: this.#destinations,
         onFormSubmit: this.#onFormSubmit,
-        onCancelClick: this.#switchEventAndForm
+        onCancelClick: this.#switchEventAndForm,
+        onDeleteClick: this.#onDeleteClick
       }
     );
 
@@ -79,27 +103,6 @@ export default class EventPresenter {
     replace(newComponent, oldComponent);
   };
 
-
-  init(event, offers = this.#offers, destinations = this.#destinations) {
-    this.#event = event;
-    this.#offers = offers;
-    this.#destinations = destinations;
-
-    this.#renderEvent();
-  }
-
-  closeForm () {
-    if (this.#isEditMode) {
-      this.#switchEventAndForm();
-    }
-  }
-
-  destroy() {
-    remove(this.#eventItemView);
-    remove(this.#formEditView);
-    document.removeEventListener('keydown', this.#onEscKeydown);
-  }
-
   #onEscKeydown = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
@@ -109,11 +112,20 @@ export default class EventPresenter {
   };
 
   #onFavoriteButtonClick = (updatedEvent) => {
-    this.#onEventChangeCallback(updatedEvent);
+    this.#onEventUpdateCallback(UserAction.UPDATE, UpdateType.MINOR, updatedEvent);
   };
 
   #onFormSubmit = (updatedEvent) => {
-    this.#onEventChangeCallback(updatedEvent);
+    const isMajorUpdate =
+      this.#event.basePrice !== updatedEvent.basePrice ||
+      !isDatesEqual(this.#event.dateFrom, updatedEvent.dateFrom) ||
+      !isDatesEqual(this.#event.dateTo, updatedEvent.dateTo);
+
+    this.#onEventUpdateCallback(UserAction.UPDATE, isMajorUpdate ? UpdateType.MAJOR : UpdateType.MINOR, updatedEvent);
     this.#switchEventAndForm();
+  };
+
+  #onDeleteClick = (deletedEvent) => {
+    this.#onEventUpdateCallback(UserAction.DELETE, UpdateType.MAJOR, deletedEvent);
   };
 }

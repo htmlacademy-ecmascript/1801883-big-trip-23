@@ -1,4 +1,5 @@
 import AbstractView from '../framework/view/abstract-view';
+import he from 'he';
 import { reformatDate, calculateDuration } from '../utils/event.js';
 import { capitalizeFirstLetter } from '../utils/common.js';
 
@@ -32,7 +33,7 @@ const createEventItemTemplate = (event, allOffers, allDestinations) => {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${capitalizeFirstLetter(type)} ${currentDestination.name}</h3>
+        <h3 class="event__title">${capitalizeFirstLetter(type)} ${he.encode(currentDestination.name)}</h3>
 
         <div class="event__schedule">
           <p class="event__time">
@@ -44,7 +45,7 @@ const createEventItemTemplate = (event, allOffers, allDestinations) => {
         </div>
 
         <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
+          &euro;&nbsp;<span class="event__price-value">${he.encode(basePrice.toString())}</span>
         </p>
 
         <h4 class="visually-hidden">Offers:</h4>

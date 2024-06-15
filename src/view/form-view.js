@@ -1,5 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
+import he from 'he';
 import 'flatpickr/dist/themes/material_blue.css';
 import { EVENT_TYPES } from '../consts.js';
 import { reformatDate } from '../utils/event.js';
@@ -12,9 +13,9 @@ const DEFAULT_SETTING_FLATPICKR = {
 };
 
 const EMPTY_EVENT = {
-  basePrice: 0,
-  dateFrom: new Date(),
-  dateTo: new Date(),
+  basePrice: '',
+  dateFrom: new Date().toISOString(),
+  dateTo: new Date().toISOString(),
   destination: null,
   isFavorite: false,
   offers: [],
@@ -52,11 +53,11 @@ const createHeader = (id, basePrice, startDate, endDate, destination, allDestina
           class="event__input event__input--destination"
           id="event-destination-1"
           type="text" name="event-destination"
-          value="${destination ? destination.name : ''}"
+          value="${destination ? he.encode(destination.name) : ''}"
           list="destination-list-1">
 
         <datalist id="destination-list-1">
-          ${allDestination.map((item) => `<option value="${item.name}"></option>`).join('')}
+          ${allDestination.map((item) => `<option value="${he.encode(item.name)}"></option>`).join('')}
         </datalist>
       </div>
 
@@ -73,14 +74,12 @@ const createHeader = (id, basePrice, startDate, endDate, destination, allDestina
           <span class="visually-hidden">Price</span>
           &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${he.encode(basePrice.toString())}">
       </div>
 
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
       <button class="event__reset-btn" type="reset">${id ? 'Delete' : 'Cancel'}</button>
-      <button class="event__rollup-btn" type="button">
-        <span class="visually-hidden">Open event</span>
-      </button>
+      ${id ? '<button class="event__rollup-btn" type="button"><span class="visually-hidden">Open event</span></button>' : ''}
     </header>
 `;
 
@@ -163,10 +162,11 @@ export default class FormView extends AbstractStatefulView {
   #allDestinations = null;
   #onFormSubmitCallback = null;
   #onCancelClickCallback = null;
+  #onDeleteClickCallback = null;
   #dateFromFlatpickr = null;
   #dateToFlatpickr = null;
 
-  constructor({event = EMPTY_EVENT, offers, destinations, onFormSubmit, onCancelClick}) {
+  constructor({event = EMPTY_EVENT, offers, destinations, onFormSubmit, onCancelClick, onDeleteClick}) {
     super();
     this._state = {...event};
     this.#allOffers = offers;
@@ -174,27 +174,39 @@ export default class FormView extends AbstractStatefulView {
 
     this.#onFormSubmitCallback = onFormSubmit;
     this.#onCancelClickCallback = onCancelClick;
+    this.#onDeleteClickCallback = onDeleteClick;
     this._restoreHandlers();
   }
+
+  removeElement = () => {
+    super.removeElement();
+    this.#dateFromFlatpickr.destroy();
+    this.#dateToFlatpickr.destroy();
+  };
 
   get template() {
     return createFormTemplate(this._state, this.#allDestinations, this.#allOffers);
   }
 
   _restoreHandlers() {
+    const isNewEvent = Boolean(!this._state.id);
+    const availableOffersElement = this.element.querySelector('.event__available-offers');
+    this.#setDatePicker();
+
+    if (availableOffersElement !== null) {
+      availableOffersElement.addEventListener('click', this.#onOfferClick);
+    }
     this.element.querySelector('form.event--edit').addEventListener('submit', this.#onFormSubmit);
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCancelClick);
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onCancelClick);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#onTypeChange);
     this.element.querySelector('#event-destination-1').addEventListener('change', this.#onDestinationChange);
     this.element.querySelector('#event-price-1').addEventListener('input', this.#onPriceInput);
 
-    const availableOffersElement = this.element.querySelector('.event__available-offers');
-    if (availableOffersElement) {
-      availableOffersElement.addEventListener('click', this.#onOfferClick);
+    if (isNewEvent) {
+      this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onCancelClick);
+      return;
     }
-
-    this.#setDatePicker();
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onCancelClick);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#onDeleteClick);
   }
 
   resetState(event) {
@@ -235,16 +247,6 @@ export default class FormView extends AbstractStatefulView {
     }
   }
 
-  #onFormSubmit = (evt) => {
-    evt.preventDefault();
-    this.#onFormSubmitCallback({...this._state});
-  };
-
-  #onCancelClick = (evt) => {
-    evt.preventDefault();
-    this.#onCancelClickCallback();
-  };
-
   #onTypeChange = (evt) => {
     evt.preventDefault();
     this.updateElement({
@@ -263,9 +265,10 @@ export default class FormView extends AbstractStatefulView {
   };
 
   #onPriceInput = (evt) => {
-    evt.preventDefault();
+    evt.target.value = evt.target.value.replace(/[^0-9]/g, '');
+
     this._setState({
-      basePrice: Number.isInteger(+evt.target.value) ? +evt.target.value : 0
+      basePrice: evt.target.value ? +evt.target.value : 0
     });
   };
 
@@ -300,5 +303,25 @@ export default class FormView extends AbstractStatefulView {
     this.updateElement({
       offers: selectedOffers
     });
+  };
+
+  #onFormSubmit = (evt) => {
+    evt.preventDefault();
+    if (this._state.destination) {
+      this.#onFormSubmitCallback({...this._state, basePrice: +this._state.basePrice});
+    }
+  };
+
+  #onCancelClick = (evt) => {
+    evt.preventDefault();
+    this.#onCancelClickCallback();
+  };
+
+  #onDeleteClick = (evt) => {
+    this.#onCancelClick(evt);
+
+    if (this._state.id) {
+      this.#onDeleteClickCallback({id: this._state.id});
+    }
   };
 }

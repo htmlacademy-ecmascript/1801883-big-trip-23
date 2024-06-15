@@ -6,6 +6,7 @@ dayjs.extend(duration);
 const reformatDate = (data) => (
   {
     monthDay: dayjs(data).format('MMM D').toUpperCase(),
+    dayMonth: dayjs(data).format('D MMM').toUpperCase(),
     yearMonthDay: dayjs(data).format('YYYY-MM-DD'),
     hourMinute: dayjs(data).format('HH:mm'),
     dateHoursMinute: dayjs(data).format('YY/MM/DD HH:mm'),
@@ -28,5 +29,9 @@ const calculateDuration = (startDate, endDate) => {
   return durationValue.format('mm[M]');
 };
 
+const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
 
-export { reformatDate, calculateDuration };
+const isMonthsEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'month');
+
+
+export { reformatDate, calculateDuration, isDatesEqual, isMonthsEqual };
