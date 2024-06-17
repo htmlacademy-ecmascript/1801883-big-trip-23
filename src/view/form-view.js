@@ -142,7 +142,6 @@ const createDestination = ({description, pictures}) => `
 
 const createFormTemplate = (event, allDestinations, allOffers) => {
   const {id, basePrice, dateFrom, dateTo, destination, offers, type, isDisabled, isSaving, isDeleting} = event;
-
   const startDate = reformatDate(dateFrom);
   const endDate = reformatDate(dateTo);
   const myDestination = allDestinations.find((item) => item.id === destination);
