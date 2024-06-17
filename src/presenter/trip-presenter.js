@@ -55,11 +55,12 @@ export default class TripPresenter {
     this.#renderEventsList();
   }
 
-  #renderEmptyList() {
+  #renderEmptyList(isLoadFailure) {
     this.#emptyListView = new EmptyListView(
       {
         currentFilter: this.#currentFilter,
-        isLoading: this.#isLoading
+        isLoading: this.#isLoading,
+        isLoadFailure: isLoadFailure
       }
     );
     render(this.#emptyListView, this.#eventsContainerElement);
@@ -97,7 +98,7 @@ export default class TripPresenter {
     eventPresenter.init(event, this.#offers, this.#destinations);
   }
 
-  #renderEventsList = (resetSortType = false) => {
+  #renderEventsList = (resetSortType = false, isLoadFailure = false) => {
     if (resetSortType) {
       this.#currentSortType = SortTypes.DAY.name;
       this.#renderSortPanel();
@@ -109,8 +110,8 @@ export default class TripPresenter {
       remove(this.#sortPanelView);
       this.#sortPanelView = null;
 
-      if (!this.#isNewEventMode || this.#isLoading) {
-        this.#renderEmptyList();
+      if (!this.#isNewEventMode || this.#isLoading || isLoadFailure) {
+        this.#renderEmptyList(isLoadFailure);
         return;
       }
     }

@@ -30,7 +30,11 @@ const tripPresenter = new TripPresenter(
 );
 
 eventsModel.init()
-  .then(() => newEventButtonElement.toggleAttribute('disabled', false));
+  .then((isLoadFailure) => {
+    if (!isLoadFailure) {
+      newEventButtonElement.toggleAttribute('disabled', false);
+    }
+  });
 
 headerPresenter.init();
 tripPresenter.init();

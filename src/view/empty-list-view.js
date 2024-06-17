@@ -10,10 +10,14 @@ const createEmptyListTemplate = (emptyMessage) => `<p class="trip-events__msg">$
 export default class EmptyListView extends AbstractView {
   #emptyMessage = null;
 
-  constructor({currentFilter, isLoading}) {
+  constructor({currentFilter, isLoading, isLoadFailure}) {
     super();
     if (isLoading) {
       this.#emptyMessage = LoadMessgae.LOADING;
+      return;
+    }
+    if (isLoadFailure) {
+      this.#emptyMessage = LoadMessgae.FAILURE;
       return;
     }
     this.#emptyMessage = currentFilter.emptyMessage;

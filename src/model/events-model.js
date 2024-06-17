@@ -39,6 +39,7 @@ export default class EventsModel extends Observable {
     }
 
     this._notify(UpdateType.MAJOR, {isLoadFailure: this.#isLoadFailure});
+    return this.#isLoadFailure;
   }
 
   updateEvent(updateType, updatedEvent) {
