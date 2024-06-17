@@ -34,7 +34,7 @@ export default class EventsApiService extends ApiService {
 
     const parsedResponse = await ApiService.parseResponse(response);
 
-    return parsedResponse;
+    return this.#adaptToClient(parsedResponse);
   }
 
   #adaptToClient(event) {

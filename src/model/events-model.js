@@ -42,9 +42,15 @@ export default class EventsModel extends Observable {
     return this.#isLoadFailure;
   }
 
-  updateEvent(updateType, updatedEvent) {
-    this.#events = this.#events.map((event) => event.id === updatedEvent.id ? updatedEvent : event);
-    this._notify(updateType, updatedEvent);
+  async updateEvent(updateType, updatedEvent) {
+    try {
+      const responseEvent = await this.#eventsApiService.updateEvent(updatedEvent);
+      this.#events = this.#events.map((event) => event.id === responseEvent.id ? responseEvent : event);
+
+      this._notify(updateType, responseEvent);
+    } catch(err) {
+      throw new Error('Can\'t update event');
+    }
   }
 
   addEvent(updateType, newEvent) {
