@@ -181,7 +181,7 @@ export default class TripPresenter {
       case UserAction.ADD:
         this.#newEventPresenter.setSaving();
         try {
-          this.#eventsModel.addEvent(updateType, updatedEvent);
+          await this.#eventsModel.addEvent(updateType, updatedEvent);
         } catch(err) {
           this.#newEventPresenter.setAborting();
         }
@@ -189,7 +189,7 @@ export default class TripPresenter {
       case UserAction.DELETE:
         this.#eventPresenters.get(updatedEvent.id).setDeleting();
         try {
-          this.#eventsModel.deleteEvent(updateType, updatedEvent);
+          await this.#eventsModel.deleteEvent(updateType, updatedEvent);
         } catch(err) {
           this.#eventPresenters.get(updatedEvent.id).setAborting();
         }

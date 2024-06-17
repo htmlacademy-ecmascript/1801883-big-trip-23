@@ -36,24 +36,23 @@ export default class NewEventPresenter {
   }
 
   setSaving() {
-    // this.#taskEditComponent.updateElement({
-    //   isDisabled: true,
-    //   isSaving: true,
-    // });
+    this.#formEditView.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
   }
 
 
   setAborting() {
-    // const resetFormState = () => {
-    //   this.#taskEditComponent.updateElement({
-    //     isDisabled: false,
-    //     isSaving: false,
-    //     isDeleting: false,
-    //   });
-    // };
+    const resetFormState = () => {
+      this.#formEditView.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
 
-    // this.#formEditView.shake(resetFormState);
-    this.#formEditView.shake();
+    this.#formEditView.shake(resetFormState);
   }
 
   #renderNewEventForm() {

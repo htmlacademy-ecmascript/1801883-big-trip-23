@@ -45,39 +45,38 @@ export default class EventPresenter {
   }
 
   setSaving() {
-    // if (this.#mode === Mode.EDITING) {
-    //   this.#taskEditComponent.updateElement({
-    //     isDisabled: true,
-    //     isSaving: true,
-    //   });
-    // }
+    if (this.#isEditMode) {
+      this.#formEditView.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
   }
 
   setDeleting() {
-    // if (this.#mode === Mode.EDITING) {
-    //   this.#taskEditComponent.updateElement({
-    //     isDisabled: true,
-    //     isDeleting: true,
-    //   });
-    // }
+    if (this.#isEditMode) {
+      this.#formEditView.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
   }
 
   setAborting() {
-    if (!this.#isEditMode) {
-      this.#eventItemView.shake();
+    if (this.#isEditMode) {
+      const resetFormState = () => {
+        this.#formEditView.updateElement({
+          isDisabled: false,
+          isSaving: false,
+          isDeleting: false,
+        });
+      };
+
+      this.#formEditView.shake(resetFormState);
       return;
     }
 
-    // const resetFormState = () => {
-    //   this.#taskEditComponent.updateElement({
-    //     isDisabled: false,
-    //     isSaving: false,
-    //     isDeleting: false,
-    //   });
-    // };
-
-    // this.#formEditView.shake(resetFormState);
-    this.#formEditView.shake();
+    this.#eventItemView.shake();
   }
 
   #renderEvent() {
