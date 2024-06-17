@@ -1,10 +1,14 @@
 import EventsModel from './model/events-model.js';
 import FilterModel from './model/filter-model.js';
+import EventsApiService from './model/events-api-service.js';
 import HeaderPresenter from './presenter/header-presenter.js';
 import TripPresenter from './presenter/trip-presenter.js';
 
+const AUTHORIZATION = 'Basic avr228w590ik29889a';
+const END_POINT = 'https://23.objects.htmlacademy.pro/big-trip';
+
 const filterModel = new FilterModel;
-const eventsModel = new EventsModel;
+const eventsModel = new EventsModel({eventsApiService: new EventsApiService(END_POINT, AUTHORIZATION)});
 
 const headerPresenter = new HeaderPresenter(
   {
@@ -24,5 +28,6 @@ const tripPresenter = new TripPresenter(
   }
 );
 
+eventsModel.init();
 headerPresenter.init();
 tripPresenter.init();

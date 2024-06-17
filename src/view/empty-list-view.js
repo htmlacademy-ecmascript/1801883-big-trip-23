@@ -1,13 +1,21 @@
 import AbstractView from '../framework/view/abstract-view';
 
+const LoadMessgae = {
+  LOADING: 'Loading...',
+  FAILURE: 'Failed to load latest route information'
+};
 
 const createEmptyListTemplate = (emptyMessage) => `<p class="trip-events__msg">${emptyMessage}</p>`;
 
 export default class EmptyListView extends AbstractView {
   #emptyMessage = null;
 
-  constructor({currentFilter}) {
+  constructor({currentFilter, isLoading}) {
     super();
+    if (isLoading) {
+      this.#emptyMessage = LoadMessgae.LOADING;
+      return;
+    }
     this.#emptyMessage = currentFilter.emptyMessage;
   }
 

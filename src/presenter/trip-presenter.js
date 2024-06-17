@@ -19,6 +19,7 @@ export default class TripPresenter {
   #newEventPresenter = null;
   #currentSortType = SortTypes.DAY.name;
   #isNewEventMode = false;
+  #isLoading = true;
 
   constructor ({eventsContainer, newEventButton, filterModel, eventsModel}) {
     this.#eventsContainerElement = eventsContainer;
@@ -55,7 +56,12 @@ export default class TripPresenter {
   }
 
   #renderEmptyList() {
-    this.#emptyListView = new EmptyListView({currentFilter: this.#currentFilter});
+    this.#emptyListView = new EmptyListView(
+      {
+        currentFilter: this.#currentFilter,
+        isLoading: this.#isLoading
+      }
+    );
     render(this.#emptyListView, this.#eventsContainerElement);
   }
 
@@ -103,7 +109,7 @@ export default class TripPresenter {
       remove(this.#sortPanelView);
       this.#sortPanelView = null;
 
-      if (!this.#isNewEventMode) {
+      if (!this.#isNewEventMode || this.#isLoading) {
         this.#renderEmptyList();
         return;
       }
@@ -172,7 +178,8 @@ export default class TripPresenter {
         this.#eventPresenters.get(updatedItem.id).init(updatedItem);
         break;
       case UpdateType.MAJOR:
-        this.#renderEventsList(updatedItem.isFilterChange);
+        this.#isLoading = false;
+        this.#renderEventsList(updatedItem.isFilterChange, updatedItem.isLoadFailure);
         break;
     }
   };
