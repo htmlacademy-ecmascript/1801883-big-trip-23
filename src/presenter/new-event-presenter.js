@@ -49,7 +49,7 @@ export default class NewEventPresenter {
   }
 
   #onFormSubmit = (updatedEvent) => {
-    this.#onEventAddCallback(UserAction.ADD, UpdateType.MAJOR, {id: 'new-event', ...updatedEvent});
+    this.#onEventAddCallback(UserAction.ADD, UpdateType.MAJOR, updatedEvent);
     this.destroy();
   };
 
