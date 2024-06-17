@@ -44,6 +44,42 @@ export default class EventPresenter {
     document.removeEventListener('keydown', this.#onEscKeydown);
   }
 
+  setSaving() {
+    // if (this.#mode === Mode.EDITING) {
+    //   this.#taskEditComponent.updateElement({
+    //     isDisabled: true,
+    //     isSaving: true,
+    //   });
+    // }
+  }
+
+  setDeleting() {
+    // if (this.#mode === Mode.EDITING) {
+    //   this.#taskEditComponent.updateElement({
+    //     isDisabled: true,
+    //     isDeleting: true,
+    //   });
+    // }
+  }
+
+  setAborting() {
+    if (!this.#isEditMode) {
+      this.#eventItemView.shake();
+      return;
+    }
+
+    // const resetFormState = () => {
+    //   this.#taskEditComponent.updateElement({
+    //     isDisabled: false,
+    //     isSaving: false,
+    //     isDeleting: false,
+    //   });
+    // };
+
+    // this.#formEditView.shake(resetFormState);
+    this.#formEditView.shake();
+  }
+
   #renderEvent() {
     const prevEventItemView = this.#eventItemView;
     const prevFormEditView = this.#formEditView;
@@ -122,7 +158,6 @@ export default class EventPresenter {
       !isDatesEqual(this.#event.dateTo, updatedEvent.dateTo);
 
     this.#onEventUpdateCallback(UserAction.UPDATE, isMajorUpdate ? UpdateType.MAJOR : UpdateType.MINOR, updatedEvent);
-    this.#switchEventAndForm();
   };
 
   #onDeleteClick = (deletedEvent) => {

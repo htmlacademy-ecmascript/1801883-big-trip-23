@@ -6,6 +6,7 @@ import { EVENT_TYPES } from '../consts.js';
 import { reformatDate } from '../utils/event.js';
 import { capitalizeFirstLetter } from '../utils/common.js';
 
+const REGULAR_EXPRESSION = /[0-9]$/;
 const DEFAULT_SETTING_FLATPICKR = {
   enableTime: true,
   dateFormat: 'd/m/y H:i',
@@ -15,7 +16,7 @@ const DEFAULT_SETTING_FLATPICKR = {
 const EMPTY_EVENT = {
   basePrice: '',
   dateFrom: new Date().toISOString(),
-  dateTo: new Date().toISOString(),
+  dateTo: new Date(Date.now() + 60000).toISOString(),
   destination: null,
   isFavorite: false,
   offers: [],
@@ -265,10 +266,12 @@ export default class FormView extends AbstractStatefulView {
   };
 
   #onPriceInput = (evt) => {
-    evt.target.value = evt.target.value.replace(/[^0-9]/g, '');
+    if (evt.target.value === '' || !REGULAR_EXPRESSION.test(evt.target.value.toString())) {
+      this.shake();
+    }
 
     this._setState({
-      basePrice: evt.target.value ? +evt.target.value : 0
+      basePrice: evt.target.value
     });
   };
 
@@ -307,9 +310,11 @@ export default class FormView extends AbstractStatefulView {
 
   #onFormSubmit = (evt) => {
     evt.preventDefault();
-    if (this._state.destination) {
+    if (this._state.destination && REGULAR_EXPRESSION.test(this._state.basePrice)) {
       this.#onFormSubmitCallback({...this._state, basePrice: +this._state.basePrice});
+      return;
     }
+    this.shake();
   };
 
   #onCancelClick = (evt) => {

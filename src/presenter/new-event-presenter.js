@@ -35,6 +35,27 @@ export default class NewEventPresenter {
     document.removeEventListener('keydown', this.#onEscKeydown);
   }
 
+  setSaving() {
+    // this.#taskEditComponent.updateElement({
+    //   isDisabled: true,
+    //   isSaving: true,
+    // });
+  }
+
+
+  setAborting() {
+    // const resetFormState = () => {
+    //   this.#taskEditComponent.updateElement({
+    //     isDisabled: false,
+    //     isSaving: false,
+    //     isDeleting: false,
+    //   });
+    // };
+
+    // this.#formEditView.shake(resetFormState);
+    this.#formEditView.shake();
+  }
+
   #renderNewEventForm() {
     this.#formEditView = new FormView(
       {
@@ -50,7 +71,6 @@ export default class NewEventPresenter {
 
   #onFormSubmit = (updatedEvent) => {
     this.#onEventAddCallback(UserAction.ADD, UpdateType.MAJOR, updatedEvent);
-    this.destroy();
   };
 
   #onEscKeydown = (evt) => {
