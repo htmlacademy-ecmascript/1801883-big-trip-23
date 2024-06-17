@@ -27,9 +27,9 @@ export default class EventsModel extends Observable {
 
   async init() {
     try {
-      this.#events = await this.#eventsApiService.event;
-      this.#offers = await this.#eventsApiService.offers;
-      this.#destinations = await this.#eventsApiService.destinations;
+      this.#events = await this.#eventsApiService.getEvents();
+      this.#offers = await this.#eventsApiService.getOffers();
+      this.#destinations = await this.#eventsApiService.getDestinations();
 
     } catch(err) {
       this.#events = [];
