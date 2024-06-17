@@ -44,6 +44,41 @@ export default class EventPresenter {
     document.removeEventListener('keydown', this.#onEscKeydown);
   }
 
+  setSaving() {
+    if (this.#isEditMode) {
+      this.#formEditView.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#isEditMode) {
+      this.#formEditView.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
+
+  setAborting() {
+    if (this.#isEditMode) {
+      const resetFormState = () => {
+        this.#formEditView.updateElement({
+          isDisabled: false,
+          isSaving: false,
+          isDeleting: false,
+        });
+      };
+
+      this.#formEditView.shake(resetFormState);
+      return;
+    }
+
+    this.#eventItemView.shake();
+  }
+
   #renderEvent() {
     const prevEventItemView = this.#eventItemView;
     const prevFormEditView = this.#formEditView;
@@ -122,7 +157,6 @@ export default class EventPresenter {
       !isDatesEqual(this.#event.dateTo, updatedEvent.dateTo);
 
     this.#onEventUpdateCallback(UserAction.UPDATE, isMajorUpdate ? UpdateType.MAJOR : UpdateType.MINOR, updatedEvent);
-    this.#switchEventAndForm();
   };
 
   #onDeleteClick = (deletedEvent) => {

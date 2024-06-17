@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view';
 
-const LoadMessgae = {
+const LoadMessages = {
   LOADING: 'Loading...',
   FAILURE: 'Failed to load latest route information'
 };
@@ -13,11 +13,11 @@ export default class EmptyListView extends AbstractView {
   constructor({currentFilter, isLoading, isLoadFailure}) {
     super();
     if (isLoading) {
-      this.#emptyMessage = LoadMessgae.LOADING;
+      this.#emptyMessage = LoadMessages.LOADING;
       return;
     }
     if (isLoadFailure) {
-      this.#emptyMessage = LoadMessgae.FAILURE;
+      this.#emptyMessage = LoadMessages.FAILURE;
       return;
     }
     this.#emptyMessage = currentFilter.emptyMessage;

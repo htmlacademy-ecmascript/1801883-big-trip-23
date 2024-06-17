@@ -8,18 +8,18 @@ const Method = {
 };
 
 export default class EventsApiService extends ApiService {
-  get event() {
+  async getEvents() {
     return this._load({url: 'points'})
       .then(ApiService.parseResponse)
       .then((response) => response.map((event) => this.#adaptToClient(event)));
   }
 
-  get offers() {
+  async getOffers() {
     return this._load({url: 'offers'})
       .then(ApiService.parseResponse);
   }
 
-  get destinations() {
+  async getDestinations() {
     return this._load({url: 'destinations'})
       .then(ApiService.parseResponse);
   }
@@ -33,8 +33,28 @@ export default class EventsApiService extends ApiService {
     });
 
     const parsedResponse = await ApiService.parseResponse(response);
-
     return this.#adaptToClient(parsedResponse);
+  }
+
+  async addEvent(event) {
+    const response = await this._load({
+      url: 'points',
+      method: Method.POST,
+      body: JSON.stringify(this.#adaptToServer(event)),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    });
+
+    const parsedResponse = await ApiService.parseResponse(response);
+    return this.#adaptToClient(parsedResponse);
+  }
+
+  async deleteEvent(event) {
+    const response = await this._load({
+      url: `points/${event.id}`,
+      method: Method.DELETE,
+    });
+
+    return response;
   }
 
   #adaptToClient(event) {

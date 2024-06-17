@@ -27,9 +27,9 @@ export default class EventsModel extends Observable {
 
   async init() {
     try {
-      this.#events = await this.#eventsApiService.event;
-      this.#offers = await this.#eventsApiService.offers;
-      this.#destinations = await this.#eventsApiService.destinations;
+      this.#events = await this.#eventsApiService.getEvents();
+      this.#offers = await this.#eventsApiService.getOffers();
+      this.#destinations = await this.#eventsApiService.getDestinations();
 
     } catch(err) {
       this.#events = [];
@@ -44,22 +44,36 @@ export default class EventsModel extends Observable {
 
   async updateEvent(updateType, updatedEvent) {
     try {
-      const responseEvent = await this.#eventsApiService.updateEvent(updatedEvent);
-      this.#events = this.#events.map((event) => event.id === responseEvent.id ? responseEvent : event);
+      const responseUpdatedEvent = await this.#eventsApiService.updateEvent(updatedEvent);
+      this.#events = this.#events.map((event) => event.id === responseUpdatedEvent.id ? responseUpdatedEvent : event);
 
-      this._notify(updateType, responseEvent);
+      this._notify(updateType, responseUpdatedEvent);
     } catch(err) {
       throw new Error('Can\'t update event');
     }
   }
 
-  addEvent(updateType, newEvent) {
-    this.#events = [...this.#events, newEvent];
-    this._notify(updateType, newEvent);
+  async addEvent(updateType, newEvent) {
+    try {
+      const responseNewEvent = await this.#eventsApiService.addEvent(newEvent);
+      this.#events = [...this.#events, responseNewEvent];
+
+      this._notify(updateType, responseNewEvent);
+    } catch(err) {
+      throw new Error('Can\'t add event');
+    }
   }
 
-  deleteEvent(updateType, deletedEvent) {
-    this.#events = this.#events.filter((event) => event.id !== deletedEvent.id);
-    this._notify(updateType, deletedEvent);
+  async deleteEvent(updateType, deletedEvent) {
+    try {
+      const responseDeletedEvent = await this.#eventsApiService.deleteEvent(deletedEvent);
+      if (responseDeletedEvent.ok) {
+        this.#events = this.#events.filter((event) => event.id !== deletedEvent.id);
+      }
+
+      this._notify(updateType, deletedEvent);
+    } catch(err) {
+      throw new Error('Can\'t delete event');
+    }
   }
 }
