@@ -1,13 +1,17 @@
 import Observable from '../framework/observable.js';
-import { getMockOffers } from '../mock/offers-data.js';
-import { getMockDestinations } from '../mock/destinations-data.js';
-import { getMockEvents } from '../mock/events-data.js';
-
+import { UpdateType } from '../consts.js';
 
 export default class EventsModel extends Observable {
-  #offers = getMockOffers();
-  #destinations = getMockDestinations();
-  #events = getMockEvents(this.#offers, this.#destinations);
+  #eventsApiService = null;
+  #isLoadFailure = false;
+  #events = [];
+  #offers = [];
+  #destinations = [];
+
+  constructor({eventsApiService}) {
+    super();
+    this.#eventsApiService = eventsApiService;
+  }
 
   get offers() {
     return this.#offers;
@@ -21,9 +25,32 @@ export default class EventsModel extends Observable {
     return this.#events;
   }
 
-  updateEvent(updateType, updatedEvent) {
-    this.#events = this.#events.map((event) => event.id === updatedEvent.id ? updatedEvent : event);
-    this._notify(updateType, updatedEvent);
+  async init() {
+    try {
+      this.#events = await this.#eventsApiService.event;
+      this.#offers = await this.#eventsApiService.offers;
+      this.#destinations = await this.#eventsApiService.destinations;
+
+    } catch(err) {
+      this.#events = [];
+      this.#offers = [];
+      this.#destinations = [];
+      this.#isLoadFailure = true;
+    }
+
+    this._notify(UpdateType.MAJOR, {isLoadFailure: this.#isLoadFailure});
+    return this.#isLoadFailure;
+  }
+
+  async updateEvent(updateType, updatedEvent) {
+    try {
+      const responseEvent = await this.#eventsApiService.updateEvent(updatedEvent);
+      this.#events = this.#events.map((event) => event.id === responseEvent.id ? responseEvent : event);
+
+      this._notify(updateType, responseEvent);
+    } catch(err) {
+      throw new Error('Can\'t update event');
+    }
   }
 
   addEvent(updateType, newEvent) {
