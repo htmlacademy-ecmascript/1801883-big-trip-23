@@ -3,8 +3,8 @@ import duration from 'dayjs/plugin/duration';
 dayjs.extend(duration);
 
 
-const reformatDate = (data) => (
-  {
+const reformatDate = (data) => data
+  ? {
     monthDay: dayjs(data).format('MMM D').toUpperCase(),
     dayMonth: dayjs(data).format('D MMM').toUpperCase(),
     yearMonthDay: dayjs(data).format('YYYY-MM-DD'),
@@ -12,7 +12,7 @@ const reformatDate = (data) => (
     dateHoursMinute: dayjs(data).format('YY/MM/DD HH:mm'),
     dateTHoursMinute: dayjs(data).format('YYYY-MM-DDTHH:mm'),
   }
-);
+  : '';
 
 const calculateDuration = (startDate, endDate) => {
   const durationInMinutes = dayjs(endDate).diff(dayjs(startDate), 'minute');
