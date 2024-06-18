@@ -18,8 +18,9 @@ const calculateDuration = (startDate, endDate) => {
   const durationInMinutes = dayjs(endDate).diff(dayjs(startDate), 'minute');
   const durationValue = dayjs.duration(durationInMinutes, 'minutes');
 
-  if (durationValue.days()) {
-    return durationValue.format('DD[D] HH[H] mm[M]',);
+  if (durationValue.days() || durationValue.years()) {
+    const daysNumber = dayjs(endDate).diff(startDate, 'day').toString().padStart(2, '0');
+    return `${daysNumber}D ${durationValue.format('HH[H] mm[M]')}`;
   }
 
   if (durationValue.hours()) {

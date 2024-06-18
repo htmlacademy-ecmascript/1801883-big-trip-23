@@ -141,10 +141,8 @@ export default class EventPresenter {
   #onEscKeydown = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
-      if (!this.#formEditView._state.isDisabled) {
-        this.#formEditView.resetState(this.#event);
-        this.#switchEventAndForm();
-      }
+      this.#formEditView.resetState(this.#event);
+      this.#switchEventAndForm();
     }
   };
 

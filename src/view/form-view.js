@@ -31,7 +31,7 @@ const createEventTypeItem = (type, selectedType) => `
   </div>
 `;
 
-const createHeader = (id, basePrice, startDate, endDate, destination, allDestination, type, isDisabled, isSaving, isDeleting) => `
+const createHeader = (id, basePrice, startDate, endDate, destination, allDestinations, type, isDisabled, isSaving, isDeleting) => `
     <header class="event__header">
       <div class="event__type-wrapper">
         <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -59,7 +59,7 @@ const createHeader = (id, basePrice, startDate, endDate, destination, allDestina
           list="destination-list-1">
 
         <datalist id="destination-list-1">
-          ${allDestination.map((item) => `<option value="${he.encode(item.name)}"></option>`).join('')}
+          ${allDestinations.map((item) => `<option value="${he.encode(item.name)}"></option>`).join('')}
         </datalist>
       </div>
 
@@ -84,9 +84,9 @@ const createHeader = (id, basePrice, startDate, endDate, destination, allDestina
       </button>
       ${id
     ? `<button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
-       <button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}><span class="visually-hidden">Open event</span></button>'`
+       <button class="event__rollup-btn" type="button"><span class="visually-hidden">Open event</span></button>'`
 
-    : `<button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>Cancel</button>`}
+    : '<button class="event__reset-btn" type="reset">Cancel</button>'}
     </header>
 `;
 
