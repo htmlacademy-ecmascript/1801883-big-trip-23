@@ -34,7 +34,7 @@ export default class TripPresenter {
     this.#eventsModel = eventsModel;
     this.#newEventButtonElement = newEventButton;
 
-    this.#newEventButtonElement.addEventListener('click', this.#renderNewEventForm);
+    this.#newEventButtonElement.addEventListener('click', () => this.#renderNewEventForm());
     this.#filterModel.addObserver(this.#onModelChange);
     this.#eventsModel.addObserver(this.#onModelChange);
   }

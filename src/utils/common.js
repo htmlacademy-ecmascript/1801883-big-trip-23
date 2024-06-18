@@ -1,4 +1,4 @@
-const capitalizeFirstLetter = (inputString) => inputString[0].toUpperCase() + inputString.slice(1);
+const capitalizeFirstLetter = (inputText) => inputText[0].toUpperCase() + inputText.slice(1);
 
 
 export { capitalizeFirstLetter };
