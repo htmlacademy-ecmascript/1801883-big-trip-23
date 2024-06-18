@@ -75,7 +75,9 @@ export default class NewEventPresenter {
   #onEscKeydown = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
-      this.#onFormClose();
+      if (!this.#formEditView._state.isDisabled) {
+        this.#onFormClose();
+      }
     }
   };
 

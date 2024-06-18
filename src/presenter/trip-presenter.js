@@ -206,7 +206,7 @@ export default class TripPresenter {
         break;
       case UpdateType.MAJOR:
         this.#isLoading = false;
-        this.#renderEventsList(updatedItem.isFilterChange, updatedItem.isLoadFailure);
+        this.#renderEventsList(true, updatedItem.isLoadFailure);
         break;
     }
   };

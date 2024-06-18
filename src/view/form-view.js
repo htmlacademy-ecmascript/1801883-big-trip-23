@@ -14,9 +14,9 @@ const DEFAULT_SETTING_FLATPICKR = {
 };
 
 const EMPTY_EVENT = {
-  basePrice: '',
-  dateFrom: new Date().toISOString(),
-  dateTo: new Date(Date.now() + 60000).toISOString(),
+  basePrice: 0,
+  dateFrom: '',
+  dateTo: '',
   destination: null,
   isFavorite: false,
   offers: [],
@@ -65,10 +65,10 @@ const createHeader = (id, basePrice, startDate, endDate, destination, allDestina
 
       <div class="event__field-group  event__field-group--time">
         <label class="visually-hidden" for="event-start-time-1">From</label>
-        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${startDate}" ${isDisabled ? 'disabled' : ''}>
+        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${startDate ? startDate : ''}" ${isDisabled ? 'disabled' : ''}>
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">To</label>
-        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${endDate}" ${isDisabled ? 'disabled' : ''}>
+        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${endDate ? endDate : ''}" ${isDisabled ? 'disabled' : ''}>
       </div>
 
       <div class="event__field-group  event__field-group--price">
